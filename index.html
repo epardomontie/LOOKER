@@ -5,498 +5,943 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tablero Usuarios Expert · Onboarding</title>
 <style>
-  :root{
-    --navy-dark:#0F2340; --navy:#16305C; --gold:#FFC400; --verde:#1E7B34;
-    --text:#1B2434; --text-soft:#5B6472; --border:#DCE2EA;
-    --blue:#2E8BEF; --blue-bg:#E3F1FF; --teal:#00B39F; --teal-bg:#DDF4F1; --amber:#F5B800;
-    --ink:#0E2150; --ink-soft:#5F6F8F;
-    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  }
   *{ box-sizing:border-box; }
-  html,body{ margin:0; font-family:var(--font); color:var(--text); }
+  html,body{ margin:0; font-family:Roboto,"Segoe UI",Helvetica,Arial,sans-serif; color:#202124; }
   body{ background:#EDEDED; }
-  .ic{ fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  button{ font-family:inherit; }
 
-  /* ===== Marco del reporte (simula Looker Studio) ===== */
-  .lk-tabs{ position:sticky; top:0; z-index:50; background:#fff; border-bottom:1px solid #DADCE0; display:flex; justify-content:center; overflow-x:auto; }
-  .lk-tabs-wrap{ position:relative; display:flex; flex:none; padding:0 6px; }
-  .lk-tab{ display:flex; flex-direction:column; align-items:center; gap:5px; padding:10px 16px 0; font-size:13px; color:#3C4043; white-space:nowrap; border-bottom:3px solid transparent; cursor:default; }
-  .lk-tab svg{ width:18px; height:18px; }
-  .lk-tab span{ padding-bottom:9px; }
-  .lk-tab.on{ color:#1A73E8; border-bottom-color:#1A73E8; }
-  .lk-canvas{ background:#fff; width:100%; max-width:1100px; margin:0 auto; padding:26px 3% 90px; box-shadow:0 0 0 1px #DADCE0; display:flex; flex-direction:column; align-items:center; gap:30px; min-height:100vh; }
-  .lk-sec{ position:relative; width:100%; }
-  .lk-sec.narrow{ max-width:82%; }
-  .lk-sec.mid{ max-width:92%; }
-  .lk-scroll{ overflow-x:auto; }
+  /* ===== Selector de idioma ===== */
+  .gate{ position:fixed; inset:0; z-index:9500; background:rgba(9,20,38,.82); display:flex; align-items:center; justify-content:center; padding:18px; }
+  .gate.hide{ display:none; }
+  .gbox{ background:#fff; border-radius:16px; width:420px; max-width:100%; padding:26px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.4); }
+  .gbox h2{ margin:0 0 6px; font-size:20px; color:#0E2150; }
+  .gbox p{ margin:0 0 18px; color:#5F6368; font-size:14px; }
+  .gbtn{ display:block; width:100%; margin-top:10px; padding:14px; font-size:15px; font-weight:700; border-radius:24px; border:1px solid #1A73E8; background:#1A73E8; color:#fff; cursor:pointer; }
+  .gbtn:hover{ background:#0B57D0; }
 
-  /* ===== Tarjetas del tablero ===== */
-  .card{ background:#fff; border:2px solid var(--acc,var(--blue)); border-radius:14px; padding:14px 18px; color:var(--ink); }
-  .card.gold{ --acc:var(--amber); background:#FFFDF6; }
-  .card.blue{ --acc:var(--blue); --acc-bg:var(--blue-bg); }
-  .card.teal{ --acc:var(--teal); --acc-bg:var(--teal-bg); }
-  .card h2, .card h3, .card h4, .card p{ margin:0; }
-  .card h2{ font-size:clamp(18px,2.6vw,26px); font-weight:800; }
-  .badge{ flex:none; width:46px; height:46px; border-radius:50%; background:var(--acc-bg); color:var(--acc); display:flex; align-items:center; justify-content:center; }
-  .badge svg{ width:24px; height:24px; }
+  .demo-banner{ background:#FFF4CC; color:#7A5A00; text-align:center; font-size:12.5px; font-weight:700; padding:6px 12px; }
+
+  /* ===== Barra superior ===== */
+  .topbar{ position:sticky; top:0; z-index:40; background:#fff; height:58px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; border-bottom:1px solid #DADCE0; }
+  .topbar .name{ font-size:18px; color:#202124; display:flex; align-items:center; gap:10px; }
+  .topbar .name i{ width:22px; height:22px; border-radius:6px; background:linear-gradient(135deg,#4285F4,#34A853); display:inline-block; }
+  .pills{ display:flex; gap:10px; align-items:center; }
+  .pill{ font-size:14px; border-radius:20px; padding:8px 16px; border:1px solid #DADCE0; background:#fff; color:#3C4043; }
+  .pill.dis{ color:#9AA0A6; }
+  .pill.blue{ background:#D3E3FD; border-color:#D3E3FD; color:#0B57D0; }
+  .pill.solid{ background:#1A73E8; border-color:#1A73E8; color:#fff; font-weight:700; }
+
+  /* ===== Pestañas ===== */
+  .tabs{ position:sticky; top:58px; z-index:39; background:#fff; display:flex; justify-content:center; border-bottom:1px solid #E0E0E0; }
+  .tab{ border:none; background:none; min-width:200px; padding:10px 16px 0; font-size:14px; color:#5F6368; cursor:pointer; border-bottom:3px solid transparent; display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .tab svg{ width:18px; height:18px; }
+  .tab span{ padding-bottom:10px; }
+  .tab.on{ color:#1A73E8; border-bottom-color:#1A73E8; }
+
+  /* ===== Lienzo ===== */
+  .canvas{ background:#fff; width:100%; max-width:1000px; margin:22px auto 90px; padding:30px 34px; box-shadow:0 1px 3px rgba(60,64,67,.25); display:flex; flex-direction:column; gap:26px; }
+  .pg{ display:flex; flex-direction:column; gap:26px; }
+  .pg[hidden]{ display:none; }
+  .sec{ position:relative; }
+
+  /* ===== Tarjetas ===== */
+  .card{ border:2px solid var(--acc,#F5C542); border-radius:16px; padding:18px 22px; background:#fff; }
+  .card.gold{ --acc:#F5C542; }
+  .card.blue{ --acc:#4A9EF5; }
+  .card.teal{ --acc:#4FD1C5; }
+  .card h2{ margin:0 0 4px; font-size:24px; font-weight:700; color:#0E2150; line-height:1.2; }
+  .card .sub{ margin:0 0 12px; font-size:13.5px; color:#5F6368; }
+  .hint{ font-size:12.5px; color:#5F6368; }
+  .note{ background:#E8F0FB; border-left:6px solid #1A73E8; border-radius:6px; padding:10px 14px; font-size:13.5px; color:#0E2150; line-height:1.5; }
+  .sel-tt{ font-size:12px; font-weight:700; color:#1A73E8; text-transform:uppercase; margin-bottom:6px; letter-spacing:.02em; }
 
   /* Panorama */
-  .pan-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin-top:10px; }
-  .kpi{ display:flex; align-items:center; gap:12px; padding:6px 14px; border-left:1px solid #F0E3B5; }
-  .kpi:first-child{ border-left:none; }
-  .kpi h4{ font-size:16px; font-weight:800; }
-  .kpi p{ font-size:12px; color:var(--ink-soft); line-height:1.3; }
-  .kpi .txt{ min-width:0; }
-  .big{ display:block; font-size:clamp(30px,5vw,52px); line-height:1.05; font-weight:400; }
-  .mid-n{ display:block; font-size:clamp(18px,2.4vw,26px); font-weight:400; white-space:nowrap; }
-  .c-blue{ color:#1F5FBF; } .c-teal{ color:var(--teal); }
-  .kpi svg.big-ic{ width:62px; height:62px; flex:none; color:#2E7BEF; }
-  .donut{ --p:3.6; flex:none; width:clamp(90px,14vw,128px); aspect-ratio:1; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center;
-    background:conic-gradient(#F5A800 calc(var(--p)*1%), #FFD36B 0); }
-  .donut::before{ content:""; position:absolute; inset:16%; background:#FFFDF6; border-radius:50%; }
-  .donut span{ position:relative; font-size:clamp(14px,2vw,20px); color:#1F5FBF; }
-  .meter{ display:block; height:22px; border-radius:6px; background:#E3EEFB; margin-top:8px; }
-  @media(max-width:760px){ .pan-row{ grid-template-columns:1fr; } .kpi{ border-left:none; border-top:1px solid #F0E3B5; } .kpi:first-child{ border-top:none; } }
-
-  /* Tablas */
-  .tbl-wrap{ border:2px solid var(--acc,var(--navy)); border-radius:14px; overflow:hidden; background:#fff; }
-  .tbl-wrap.navy{ --acc:#1F8BEF; } .tbl-wrap.plain{ --acc:#F5B800; border-width:1px; border-radius:6px; }
-  .tbl-wrap.teal{ --acc:var(--teal); }
-  table.tbl{ width:100%; min-width:640px; border-collapse:collapse; font-size:12px; color:#555; text-align:center; }
-  .tbl th{ background:#0E1F4D; color:#fff; font-weight:700; padding:9px 8px; white-space:nowrap; }
-  .tbl-wrap.teal .tbl th{ background:var(--teal); }
-  .tbl td{ padding:8px; white-space:nowrap; }
-  .tbl td:first-child, .tbl th:first-child{ text-align:left; width:34px; color:#777; }
-  .tbl tbody tr:nth-child(even){ background:#F6F8FB; }
-  .tbl-wrap.teal tbody tr:nth-child(odd){ background:#E0F2F1; }
-  .tbl-wrap.teal tbody tr:nth-child(even){ background:#fff; }
-  .pager{ display:flex; justify-content:flex-end; gap:16px; padding:8px 14px; font-size:11.5px; color:#555; border-top:1px solid #EEE; background:#fff; }
-  .h1{ background:#DDF1F5; } .h2{ background:#9ED8E2; } .h3{ background:#2BB5C9; color:#fff; }
-  .tf{ display:inline-flex; align-items:center; gap:5px; }
-  .tf.ok::before{ content:"✓"; width:14px; height:14px; border-radius:3px; background:#34C26B; color:#fff; font-size:10px; line-height:14px; text-align:center; font-weight:800; }
-  .tf.no::before{ content:"✕"; color:#E5365A; font-size:13px; font-weight:800; }
-
-  /* Banner de warehouse */
-  .banner{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-  .banner .badge{ width:84px; height:84px; } .banner .badge svg{ width:46px; height:46px; }
-  .banner .txt{ flex:1; min-width:220px; }
-  .banner h3{ font-size:clamp(17px,2.3vw,22px); font-weight:800; }
-  .banner p{ font-size:12.5px; line-height:1.4; color:var(--ink); margin-top:4px; }
-  .banner .flt1{ border-left:1px solid #CFE0F3; padding-left:16px; min-width:170px; }
-  .flt1 small{ display:block; font-size:11px; font-weight:800; color:var(--blue); letter-spacing:.03em; margin-bottom:6px; }
+  .pan{ display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; }
+  .pan > div{ padding:6px 16px; }
+  .pan > div + div{ border-left:2px solid #F3DC9A; }
+  .pan h4{ margin:0 0 6px; font-size:17px; color:#0E2150; }
+  .pan .d{ font-size:12.5px; color:#5F6368; line-height:1.35; }
+  .big{ font-size:52px; line-height:1; color:#2F5D8F; }
+  .big.teal{ color:#14B39A; }
+  .big.pct{ font-size:38px; }
+  .meter{ display:block; height:24px; border-radius:6px; background:#E3EEFB; margin-top:10px; }
 
   /* Filtros */
-  .sel{ display:flex; justify-content:space-between; align-items:center; gap:8px; background:var(--acc-bg); border:1px solid color-mix(in srgb,var(--acc) 35%,#fff); border-radius:10px; padding:8px 12px; font-size:13px; color:#222; }
-  .sel::after{ content:""; border:4px solid transparent; border-top-color:#444; border-bottom:0; }
-  .flt-head{ display:flex; align-items:center; gap:12px; padding-bottom:8px; }
-  .flt-head .badge{ width:42px; height:42px; } .flt-head svg{ width:22px; height:22px; }
-  .flt-head h3{ font-size:clamp(17px,2.4vw,24px); font-weight:800; }
-  .flt-head p{ font-size:13px; color:var(--ink-soft); }
-  .card.teal .flt-head{ border-bottom:1px solid #CFEDE9; margin-bottom:10px; }
-  .flt-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; }
-  .f{ padding:0 12px; border-left:1px solid #E1EAF4; } .f:first-child{ border-left:none; padding-left:0; }
-  .f-top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-  .f-top .badge{ width:36px; height:36px; } .f-top svg{ width:20px; height:20px; }
-  .f-top b{ font-size:17px; font-weight:800; }
-  @media(max-width:760px){ .flt-row{ grid-template-columns:1fr 1fr; row-gap:14px; } .f:nth-child(odd){ border-left:none; padding-left:0; } }
+  .sel{ width:100%; background:#DCEBFA; border:2px solid #B9D7F5; border-radius:10px; padding:10px 12px; font-size:14px; color:#202124; }
+  .sel-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:12px; }
+  .sel-row label{ font-size:13px; font-weight:700; color:#0E2150; display:block; margin-bottom:6px; }
+  .sel-row4{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:8px; }
+  .sel-row4 label{ font-size:12px; font-weight:700; color:#5F6368; display:block; margin-bottom:4px; text-transform:uppercase; }
 
-  /* Tarjetas de número e información */
-  .duo{ display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:center; }
-  @media(max-width:760px){ .duo{ grid-template-columns:1fr; } }
-  .stat{ padding:0; overflow:hidden; border-radius:14px; }
-  .stat-title{ display:flex; align-items:center; gap:8px; font-size:15px; font-weight:800; padding:9px 14px; border-bottom:2px solid color-mix(in srgb,var(--acc) 30%,#fff); }
-  .stat-title::before{ content:""; width:5px; height:20px; border-radius:3px; background:var(--acc); }
-  .stat-body{ display:flex; align-items:center; gap:14px; padding:10px 16px 12px; }
-  .stat-body .badge{ width:66px; height:66px; } .stat-body .badge svg{ width:34px; height:34px; }
-  .stat-num{ font-size:clamp(34px,5vw,50px); line-height:1; color:var(--acc); padding:0 6px; flex:none; }
-  .stat-body .txt{ border-left:1px solid #D5E3F2; padding-left:14px; min-width:0; }
-  .stat-body b{ display:block; font-size:19px; font-weight:800; }
-  .stat-body small{ display:block; font-size:11.5px; color:var(--ink-soft); }
-  .stat-body small em{ display:block; text-align:center; color:#1F5FBF; font-style:normal; }
-  .info{ display:flex; align-items:center; gap:14px; padding:12px 16px; }
-  .info .badge{ width:58px; height:58px; border-radius:16px; } .info .badge svg{ width:32px; height:32px; }
-  .info .txt{ border-left:1px solid #D5E3F2; padding-left:14px; }
-  .info h3{ font-size:16px; font-weight:800; } .info p{ font-size:13.5px; margin-top:3px; } .info p.s{ font-size:12px; color:var(--ink-soft); }
-  .info.t{ display:block; padding:0; overflow:hidden; } .info.t .stat-title{ border-bottom:1px solid #CFEDE9; }
-  .info.t .in{ display:flex; align-items:center; gap:14px; padding:12px 16px; }
+  /* Tarjetas EXPERT / FALTA / A MEJORAR */
+  .trio{ display:grid; grid-template-columns:1fr 1fr 1fr; }
+  .trio > div{ padding:4px 16px; }
+  .trio > div + div{ border-left:2px solid #E3ECF7; }
+  .trio h3{ margin:0 0 10px; font-size:19px; color:#0E2150; font-weight:700; padding-left:10px; border-left:6px solid #1A73E8; }
+  .trio .lbl{ color:#1A73E8; font-weight:700; font-size:14px; margin:0 0 8px; }
+  .trio p{ margin:6px 0; font-size:13px; line-height:1.4; color:#202124; }
+  .stats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+  .st{ border:1px solid #DCE6F2; border-radius:10px; padding:10px; text-align:center; background:#fff; }
+  .st .n{ font-size:30px; color:#2F5D8F; }
+  .st .n.red{ color:#C5221F; }
+  .st .c{ font-size:10.5px; color:#5F6368; line-height:1.3; margin-top:4px; }
 
-  /* ===== Hotspots numerados ===== */
-  .hs{ position:absolute; top:-12px; left:-8px; z-index:5; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:var(--gold); color:var(--navy-dark); font:800 14px/30px var(--font); text-align:center; padding:0; box-shadow:0 3px 10px rgba(0,0,0,.3); animation:hsPulse 1.8s infinite; }
-  .hs:hover{ background:#FFE600; }
-  .hs.done{ background:var(--verde); color:#fff; animation:none; }
-  .lk-tabs .hs{ top:4px; left:0; }
+  /* Tablas */
+  .tbl-wrap{ border:2px solid #0E1F4D; border-radius:12px; overflow:auto; background:#fff; }
+  .tbl-wrap.gold{ border-color:#F5C542; }
+  table.tbl{ width:100%; border-collapse:collapse; font-size:12.5px; text-align:center; color:#3C4043; min-width:560px; }
+  .tbl th{ background:#0E1F4D; color:#fff; padding:8px 6px; font-weight:700; white-space:nowrap; }
+  .tbl td{ padding:7px 6px; border-top:1px solid #EEF1F6; white-space:nowrap; }
+  .tbl td:first-child, .tbl th:first-child{ text-align:left; }
+  .tbl tbody tr:nth-child(even){ background:#F6F8FB; }
+  .tf-ok{ color:#1E8E3E; font-weight:700; } .tf-no{ color:#D93025; font-weight:700; }
+  .pager{ display:flex; justify-content:flex-end; gap:14px; padding:8px 12px; font-size:12px; color:#5F6368; border-top:1px solid #EEE; }
+  .tbl td.wrap{ white-space:normal; min-width:150px; line-height:1.3; }
+
+  /* Gráficos */
+  .chart{ border:2px solid #A9CCF2; border-radius:12px; overflow:hidden; background:#fff; }
+  .chart .hd{ background:#0E2150; color:#fff; padding:14px 18px; }
+  .chart .hd h3{ margin:0; font-size:19px; font-weight:700; }
+  .chart .hd p{ margin:2px 0 0; font-size:13px; color:#C9D6EA; }
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:#3C4043; padding:8px 14px 0; }
+  .legend i{ display:inline-block; width:12px; height:12px; border-radius:2px; margin-right:6px; vertical-align:middle; }
+  .chart .body{ padding:6px 10px 12px; }
+  .chart svg{ width:100%; height:auto; display:block; }
+
+  /* KPI */
+  .kpis4{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:12px; }
+  .k4{ border:2px solid #A9CCF2; border-radius:12px; padding:12px; background:#fff; }
+  .k4 h4{ margin:0 0 8px; font-size:12px; color:#0E2150; letter-spacing:.02em; }
+  .k4 .v{ border:1px solid #DDE7F3; border-radius:8px; padding:10px; font-size:26px; text-align:center; background:#F6F9FD; color:#202124; }
+  .k4 small{ display:block; font-size:11px; color:#5F6368; margin-top:8px; line-height:1.3; }
+
+  /* Retiros */
+  .ret{ border:2px solid #F5C542; border-radius:14px; padding:16px; background:#fff; }
+  .ret-title{ background:#FFF3B0; text-align:center; font-size:22px; font-weight:700; color:#0E2150; padding:8px; border-radius:8px; margin-bottom:12px; }
+  .ret-row{ display:grid; grid-template-columns:1fr 1.4fr; gap:14px; }
+  .ret-card{ border:2px solid #F5C542; border-radius:12px; padding:14px; }
+  .ret-card h4{ margin:0 0 6px; font-size:15px; color:#B07A00; text-transform:uppercase; }
+  .ret-card .big-n{ border:1px solid #DDE7F3; border-radius:8px; padding:6px 12px; font-size:44px; color:#2F5D8F; text-align:right; }
+  .chip{ display:inline-block; border-radius:8px; padding:6px 10px; font-size:12px; font-weight:700; margin:4px 6px 4px 0; }
+  .chip.ok{ background:#CFF3E3; color:#0B7A4B; }
+  .chip.warn{ background:#FFF0B3; color:#7A5A00; }
+  .hbar{ display:grid; grid-template-columns:170px 1fr 36px; gap:8px; align-items:center; font-size:12px; margin:8px 0; }
+  .hbar .t{ background:#F3F4F6; height:18px; border-radius:3px; overflow:hidden; }
+  .hbar .f{ height:100%; background:#E9B82E; }
+  .rules{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:14px; }
+  .rule{ border:2px solid #F5C542; border-radius:10px; padding:8px; font-size:11px; line-height:1.35; }
+  .rule b{ display:block; font-size:12px; color:#0E2150; margin-bottom:4px; }
+  .rule .hoy{ float:right; font-size:10px; color:#5F6368; }
+
+  /* Hotspots */
+  .hs{ position:absolute; top:-12px; left:-12px; z-index:5; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:#FFC400; color:#0F2340; font-weight:800; font-size:14px; padding:0; box-shadow:0 3px 10px rgba(0,0,0,.3); animation:hsPulse 1.8s infinite; }
+  .hs.done{ background:#1E7B34; color:#fff; animation:none; }
   @keyframes hsPulse{ 0%{ box-shadow:0 0 0 0 rgba(255,196,0,.6), 0 3px 10px rgba(0,0,0,.3);} 100%{ box-shadow:0 0 0 13px rgba(255,196,0,0), 0 3px 10px rgba(0,0,0,.3);} }
 
-  @media(max-width:760px){ .lk-sec.narrow, .lk-sec.mid{ max-width:100%; } .lk-canvas{ padding:16px 10px 90px; gap:22px; } }
+  .foot{ font-size:11px; color:#5F6368; margin-top:6px; }
 
-  /* ===== Capa de onboarding (prefijo gx-) ===== */
-  .gx-ring{ position:fixed; z-index:9000; pointer-events:none; border-radius:12px; display:none; box-shadow:0 0 0 9999px rgba(9,20,38,.66), 0 0 0 3px #FFE600, 0 0 0 7px rgba(255,230,0,.28); transition:top .22s ease, left .22s ease, width .22s ease, height .22s ease; }
-  .gx-block{ position:fixed; inset:0; z-index:8999; display:none; }
-  .gx-card{ position:fixed; z-index:9001; width:380px; max-width:calc(100vw - 24px); background:#fff; color:var(--text); border-radius:14px; box-shadow:0 18px 48px rgba(6,16,32,.38), 0 0 0 1px rgba(15,35,64,.08); font:400 13.5px/1.55 var(--font); padding:16px 18px 14px; display:none; transition:top .22s ease, left .22s ease; }
-  .gx-top{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
-  .gx-chap{ font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--navy); background:#EEF3FA; border-radius:20px; padding:3px 9px; }
-  .gx-count{ font-size:11px; color:var(--text-soft); font-weight:700; }
-  .gx-prog{ height:4px; background:#EEF1F6; border-radius:4px; overflow:hidden; margin-bottom:12px; }
-  .gx-prog i{ display:block; height:100%; background:linear-gradient(90deg,#FFC400,#FFE600); border-radius:4px; transition:width .25s ease; }
-  .gx-title{ margin:0 0 8px; font-size:16px; line-height:1.3; font-weight:800; color:var(--navy-dark); }
-  .gx-text{ margin:0 0 9px; } .gx-text b{ color:var(--navy-dark); }
-  .gx-lbl{ font-size:10px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#8A6D00; margin-bottom:3px; }
-  .gx-do{ background:#FFFBE6; border:1px solid #F5DE7A; border-radius:10px; padding:9px 11px; margin:0 0 10px; font-size:13px; }
-  .gx-do ul{ margin:0; padding-left:18px; } .gx-do li{ margin-bottom:3px; }
-  .gx-actions{ display:flex; gap:8px; align-items:center; margin-top:4px; }
-  .gx-sp{ flex:1; }
-  .gx-btn{ font:700 12.5px/1 var(--font); border-radius:9px; padding:9px 12px; cursor:pointer; border:1px solid var(--border); background:#fff; color:var(--navy); }
-  .gx-btn:hover{ border-color:var(--navy); } .gx-btn:disabled{ opacity:.45; cursor:default; }
-  .gx-btn.gx-primary{ background:var(--navy); border-color:var(--navy); color:#fff; } .gx-btn.gx-primary:hover{ background:var(--navy-dark); }
-  .gx-btn.gx-ghost{ border-color:transparent; color:var(--text-soft); padding-left:6px; padding-right:6px; }
-  .gx-modal{ position:fixed; inset:0; z-index:9100; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(9,20,38,.66); font:400 14px/1.55 var(--font); }
-  .gx-modal.open{ display:flex; }
-  .gx-panel{ width:560px; max-width:100%; max-height:calc(100vh - 36px); overflow:auto; background:#fff; border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,.4); }
-  .gx-panel-head{ background:var(--navy-dark); color:#fff; padding:22px 26px 18px; border-radius:16px 16px 0 0; position:relative; overflow:hidden; }
-  .gx-panel-head:after{ content:""; position:absolute; right:-40px; top:-40px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(255,196,0,.35),transparent 70%); }
-  .gx-eyebrow{ font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--gold); margin-bottom:4px; position:relative; z-index:1; }
-  .gx-panel-head h2{ margin:0 0 6px; font-size:21px; line-height:1.25; position:relative; z-index:1; }
-  .gx-panel-head p{ margin:0; color:#C9D3E2; font-size:13px; position:relative; z-index:1; }
-  .gx-panel-body{ padding:18px 24px 22px; }
-  .gx-panel-body ul{ margin:0 0 16px; padding-left:18px; font-size:13px; } .gx-panel-body li{ margin-bottom:5px; }
-  .gx-panel-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-  .gx-fab{ position:fixed; right:18px; bottom:18px; z-index:8000; font:800 13px/1 var(--font); background:var(--navy-dark); color:#FFE600; border:none; border-radius:30px; padding:12px 16px; cursor:pointer; box-shadow:0 8px 22px rgba(6,16,32,.35); }
-  .gx-fab:hover{ background:var(--navy); }
-  @media(max-width:640px){ .gx-card{ left:12px !important; right:12px; top:auto !important; bottom:12px; width:auto; } .gx-fab{ right:12px; bottom:12px; } }
+  /* ===== Recorrido guiado ===== */
+  .fab{ position:fixed; right:18px; bottom:18px; z-index:8000; font-weight:700; font-size:13px; background:#0F2350; color:#FFE600; border:none; border-radius:30px; padding:12px 16px; cursor:pointer; box-shadow:0 8px 22px rgba(6,16,32,.35); }
+  .ring{ position:fixed; z-index:9000; pointer-events:none; border-radius:12px; display:none; box-shadow:0 0 0 9999px rgba(9,20,38,.66), 0 0 0 3px #FFE600; transition:all .25s ease; }
+  .tour{ position:fixed; z-index:9001; width:400px; max-width:calc(100vw - 24px); background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 18px 48px rgba(6,16,32,.38); display:none; font-size:13.5px; line-height:1.5; max-height:70vh; overflow:auto; }
+  .tour .cnt{ font-size:11px; font-weight:700; color:#5F6368; }
+  .tour h3{ margin:6px 0 6px; font-size:17px; color:#0E2150; }
+  .tour .src{ background:#EEF4FC; border-radius:8px; padding:7px 10px; margin-top:8px; font-size:12.5px; color:#0E2150; }
+  .tour .how{ background:#FFFBE6; border:1px solid #F5DE7A; border-radius:10px; padding:9px 11px; margin-top:10px; font-size:12.5px; }
+  .tour .how ul{ margin:4px 0 0; padding-left:18px; }
+  .tour .how li{ margin-bottom:3px; }
+  .tour .acts{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+  .btn{ font-size:13px; font-weight:700; border-radius:20px; padding:9px 14px; cursor:pointer; border:1px solid #DADCE0; background:#fff; color:#0B57D0; }
+  .btn.pri{ background:#1A73E8; border-color:#1A73E8; color:#fff; }
+  .btn:disabled{ opacity:.4; cursor:default; }
+  .btn.ghost{ border-color:transparent; color:#5F6368; }
+
+  /* Bienvenida */
+  .wm{ position:fixed; inset:0; z-index:9100; background:rgba(9,20,38,.66); display:none; align-items:center; justify-content:center; padding:18px; }
+  .wm.open{ display:flex; }
+  .wp{ background:#fff; border-radius:16px; width:520px; max-width:100%; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.4); }
+  .wp .wh{ background:#0F2350; color:#fff; padding:20px 24px; }
+  .wp .wh small{ color:#FFC400; font-weight:800; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  .wp .wh h2{ margin:6px 0 4px; font-size:20px; }
+  .wp .wh p{ margin:0; color:#C9D6EA; font-size:13px; }
+  .wp .wb{ padding:16px 24px 20px; font-size:14px; }
+  .wp ul{ margin:0 0 14px; padding-left:18px; } .wp li{ margin-bottom:6px; }
+  .wp .acts{ display:flex; gap:8px; justify-content:flex-end; }
+
+  @media(max-width:760px){
+    .canvas{ padding:16px 12px; }
+    .pan, .trio, .kpis4, .ret-row, .sel-row, .sel-row4, .rules{ grid-template-columns:1fr; }
+    .pan > div + div, .trio > div + div{ border-left:none; border-top:2px solid #E3ECF7; }
+    .tab{ min-width:120px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Iconos reutilizables -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="i-badge" viewBox="0 0 24 24"><path class="ic" d="M12 2.5l2.3 1.6 2.8-.1 1 2.6 2.3 1.6-.8 2.7.8 2.7-2.3 1.6-1 2.6-2.8-.1L12 21.5l-2.3-1.6-2.8.1-1-2.6-2.3-1.6.8-2.7-.8-2.7 2.3-1.6 1-2.6 2.8.1z"/><path class="ic" d="M8.5 12.2l2.4 2.4 4.6-4.8"/></symbol>
-    <symbol id="i-chart" viewBox="0 0 24 24"><rect class="ic" x="3.5" y="3.5" width="17" height="17" rx="2"/><path class="ic" d="M8 17v-5M12 17V8M16 17v-3"/></symbol>
-    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3.6" fill="currentColor"/><circle cx="4.8" cy="9.4" r="2.6" fill="currentColor"/><circle cx="19.2" cy="9.4" r="2.6" fill="currentColor"/><path fill="currentColor" d="M5.5 20.5c0-3.8 2.8-6.3 6.5-6.3s6.5 2.5 6.5 6.3z"/><path fill="currentColor" d="M.8 18.5c0-2.6 1.7-4.2 4-4.2 1 0 1.8.3 2.4.7-1.2 1-2 2.2-2.3 3.5z"/><path fill="currentColor" d="M23.2 18.5c0-2.6-1.7-4.2-4-4.2-1 0-1.8.3-2.4.7 1.2 1 2 2.2 2.3 3.5z"/></symbol>
-    <symbol id="i-funnel" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4.5h18l-7 8.2V20l-4-2v-5.3z"/></symbol>
-    <symbol id="i-id" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="currentColor"/><circle cx="8.5" cy="11" r="2" fill="#fff"/><path fill="#fff" d="M5.2 16.2c.4-1.7 1.8-2.4 3.3-2.4s2.9.7 3.3 2.4zM14 9.5h5.5v1.4H14zM14 12.6h4v1.4h-4z"/></symbol>
-    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.2" fill="currentColor"/><path fill="currentColor" d="M3.8 21c0-4.5 3.6-7.2 8.2-7.2s8.2 2.7 8.2 7.2z"/></symbol>
-    <symbol id="i-org" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="5" rx="1" fill="currentColor"/><rect x="2" y="16.5" width="6" height="5" rx="1" fill="currentColor"/><rect x="16" y="16.5" width="6" height="5" rx="1" fill="currentColor"/><rect x="9" y="16.5" width="6" height="5" rx="1" fill="currentColor"/><path class="ic" d="M12 7.5v4M5 16.5v-5h14v5M12 11.5v5"/></symbol>
-    <symbol id="i-clock" viewBox="0 0 24 24"><circle class="ic" cx="12" cy="12" r="9" stroke-width="2.6"/><path class="ic" d="M12 7v5.2l3.6 2" stroke-width="2.6"/></symbol>
-    <symbol id="i-bars" viewBox="0 0 24 24"><rect x="3" y="14" width="4" height="7" rx="1" fill="#0F2340"/><rect x="8.5" y="10" width="4" height="11" rx="1" fill="#2E8BEF"/><rect x="14" y="7" width="4" height="14" rx="1" fill="#F5B800"/><path class="ic" d="M4 11l5-3 5-1 5-4" stroke="#0F2340" stroke-width="1.6"/><circle cx="19" cy="3.4" r="1.6" fill="#F5B800"/></symbol>
-    <symbol id="i-doc" viewBox="0 0 24 24"><rect class="ic" x="4.5" y="3" width="12" height="17" rx="2"/><path class="ic" d="M8 8h5M8 12h5M8 16h3"/><path class="ic" d="M17 12l3 1.2v3c0 2-1.4 3.4-3 4-1.6-.6-3-2-3-4v-3z" fill="#fff"/></symbol>
-    <symbol id="i-clip" viewBox="0 0 24 24"><rect class="ic" x="5" y="4" width="14" height="17" rx="2" stroke-width="2.2"/><rect x="9" y="2" width="6" height="4" rx="1" fill="currentColor"/><path class="ic" d="M8.5 11l1.2 1.2 2-2M8.5 16l1.2 1.2 2-2M14 11.5h2.5M14 16.5h2.5" stroke-width="1.8"/></symbol>
-  </defs>
-</svg>
-
-<!-- Barra de pestañas del reporte -->
-<nav class="lk-tabs" aria-label="Pestañas del reporte">
-  <div class="lk-tabs-wrap" id="sec-tabs">
-    <div class="lk-tab on"><svg><use href="#i-badge"/></svg><span>Adopción: Usuarios Expert</span></div>
-    <div class="lk-tab"><svg><use href="#i-chart"/></svg><span>Productividad</span></div>
-    <div class="lk-tab"><svg><use href="#i-badge"/></svg><span>Each masivo</span></div>
-    <button class="hs" data-step="0" type="button" aria-label="Explicación 1">1</button>
+<div class="gate" id="gate">
+  <div class="gbox">
+    <h2 id="g-title"></h2>
+    <p id="g-sub"></p>
+    <button class="gbtn" data-lang="es" type="button">🇲🇽 Español (México)</button>
+    <button class="gbtn" data-lang="pt" type="button">🇧🇷 Português (Brasil)</button>
   </div>
+</div>
+
+<div class="demo-banner" id="demo-banner"></div>
+
+<header class="topbar">
+  <div class="name"><i></i><span id="report-name"></span></div>
+  <div class="pills">
+    <span class="pill dis" id="b-restore"></span>
+    <span class="pill blue" id="b-share"></span>
+    <span class="pill solid" id="b-edit"></span>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Pestañas">
+  <button class="tab on" data-page="adopcion" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+    <span id="tab-adop"></span>
+  </button>
+  <button class="tab" data-page="performance" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg>
+    <span id="tab-perf"></span>
+  </button>
 </nav>
 
-<!-- Lienzo del reporte -->
-<main class="lk-canvas">
+<main class="canvas">
 
-  <!-- 2 · Panorama -->
-  <section class="lk-sec" id="sec-panorama">
-    <div class="card gold">
-      <h2>Panorama de adopción del Rol Expert</h2>
-      <div class="pan-row">
-        <div class="kpi">
-          <svg class="big-ic"><use href="#i-users"/></svg>
-          <div class="txt"><h4>HC Check-In</h4><p>Total de representantes en Check-In</p><b class="big c-blue">1.250</b></div>
+  <!-- ===================== ADOPCIÓN ===================== -->
+  <div class="pg" id="pg-adopcion">
+
+    <section class="card gold sec" id="sec-panorama">
+      <h2 id="t-panorama"></h2>
+      <div class="pan">
+        <div id="kpi-hc">
+          <h4 id="k-hc-t"></h4>
+          <div class="d" id="k-hc-d"></div>
+          <div class="big" id="v-hc"></div>
         </div>
-        <div class="kpi">
-          <div class="donut" style="--p:3.6"><span>3,60 %</span></div>
-          <div class="txt"><h4>Rol Expert activo</h4><p>Representantes con Rol Expert activo sobre el total de Check-In</p><i class="meter"></i></div>
+        <div id="kpi-rol">
+          <div class="big pct" id="v-rol"></div>
+          <h4 id="k-rol-t"></h4>
+          <div class="d" id="k-rol-d"></div>
+          <i class="meter"></i>
         </div>
-        <div class="kpi">
-          <div><b class="big c-teal">410</b><b class="mid-n c-teal">32,80 %</b></div>
-          <div class="txt"><h4>Capacitados</h4><p>Representantes capacitados sobre el total de Check-In</p><i class="meter"></i></div>
-        </div>
-      </div>
-    </div>
-    <button class="hs" data-step="1" type="button" aria-label="Explicación 2">2</button>
-  </section>
-
-  <!-- 3 · Tabla por warehouse -->
-  <section class="lk-sec mid" id="sec-warehouse">
-    <div class="tbl-wrap plain lk-scroll">
-      <table class="tbl">
-        <thead><tr><th></th><th>WAREHOUSE</th><th>NATIVOS</th><th>CON_ROL</th><th>NATIVOS_CON_ROL</th><th>% de Adherencia</th><th>% con Curso</th></tr></thead>
-        <tbody>
-          <tr><td>1.</td><td>WH-DEMO-01</td><td>640</td><td>20</td><td>9</td><td class="h1">1,41 %</td><td class="h1">12,50 %</td></tr>
-          <tr><td>2.</td><td>WH-DEMO-02</td><td>215</td><td>31</td><td>6</td><td class="h1">2,79 %</td><td class="h3">41,20 %</td></tr>
-          <tr><td>3.</td><td>WH-DEMO-03</td><td>52</td><td>7</td><td>2</td><td class="h1">3,85 %</td><td>3,10 %</td></tr>
-          <tr><td>4.</td><td>WH-DEMO-04</td><td>130</td><td>11</td><td>3</td><td class="h1">2,31 %</td><td class="h2">24,60 %</td></tr>
-          <tr><td>5.</td><td>WH-DEMO-05</td><td>9</td><td>15</td><td>2</td><td class="h3">22,22 %</td><td class="h2">18,90 %</td></tr>
-          <tr><td>6.</td><td>WH-DEMO-06</td><td>0</td><td>4</td><td>0</td><td>null</td><td class="h2">14,30 %</td></tr>
-          <tr><td>7.</td><td>WH-DEMO-07</td><td>6</td><td>8</td><td>0</td><td>0 %</td><td class="h3">48,00 %</td></tr>
-        </tbody>
-      </table>
-      <div class="pager"><span>1 - 7 / 7</span><span>‹</span><span>›</span></div>
-    </div>
-    <button class="hs" data-step="2" type="button" aria-label="Explicación 3">3</button>
-  </section>
-
-  <!-- 4 · Banner + filtro de warehouse -->
-  <section class="lk-sec narrow" id="sec-banner">
-    <div class="card gold banner">
-      <div class="badge" style="background:#E3F1FF"><svg><use href="#i-bars"/></svg></div>
-      <div class="txt">
-        <h3>Adopción y capacitación por Warehouse</h3>
-        <p>Las barras comparan personas, nativos (proceso madre Check-In), representantes con Rol Expert y nativos con rol. Las líneas muestran adherencia y porcentaje con curso aplicado.</p>
-      </div>
-      <div class="flt1 blue"><small>FILTRA POR WAREHOUSE</small><div class="sel" style="--acc:var(--blue);--acc-bg:var(--blue-bg)">WAREHO…</div></div>
-    </div>
-    <button class="hs" data-step="3" type="button" aria-label="Explicación 4">4</button>
-  </section>
-
-  <!-- 5 · Filtros (azul) -->
-  <section class="lk-sec mid" id="sec-filtros">
-    <div class="card blue">
-      <div class="flt-head"><div class="badge"><svg><use href="#i-funnel"/></svg></div><div><h3>Explora el detalle por representante</h3><p>Filtra la tabla por identificador, nombre, líder o turno.</p></div></div>
-      <div class="flt-row">
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-id"/></svg></div><b>LDAP</b></div><div class="sel">LDAP</div></div>
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-user"/></svg></div><b>Nombre</b></div><div class="sel">NOMBRE</div></div>
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-org"/></svg></div><b>Líder</b></div><div class="sel">LIDER</div></div>
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-clock"/></svg></div><b>Turno</b></div><div class="sel">TURNO</div></div>
-      </div>
-    </div>
-    <button class="hs" data-step="4" type="button" aria-label="Explicación 5">5</button>
-  </section>
-
-  <!-- 6 · Roles activos -->
-  <section class="lk-sec" id="sec-roles">
-    <div class="duo">
-      <div class="card blue stat">
-        <div class="stat-title">Listado de roles activos · Check-In Expert</div>
-        <div class="stat-body">
-          <div class="badge"><svg><use href="#i-users"/></svg></div>
-          <span class="stat-num">45</span>
-          <div class="txt"><b>Expertos activos</b><small>Roles activos de Check-In Expert<em>3,60 %</em></small></div>
+        <div id="kpi-cap">
+          <div class="big teal" id="v-cap"></div>
+          <div class="big pct teal" id="v-cap-pct"></div>
+          <h4 id="k-cap-t"></h4>
+          <div class="d" id="k-cap-d"></div>
+          <i class="meter"></i>
         </div>
       </div>
-      <div class="card blue info">
-        <div class="badge"><svg><use href="#i-doc"/></svg></div>
-        <div class="txt"><h3>¿Qué representa?</h3><p>Permiso Rol Expert activo y estado del curso.</p><p class="s">Detecta permisos activos sin curso registrado; requiere revisión.</p></div>
-      </div>
-    </div>
-    <button class="hs" data-step="5" type="button" aria-label="Explicación 6">6</button>
-  </section>
+      <button class="hs" data-step="1" type="button">1</button>
+    </section>
 
-  <!-- 7 · Tabla de roles activos -->
-  <section class="lk-sec" id="sec-tabla-roles">
-    <div class="tbl-wrap navy lk-scroll">
-      <table class="tbl">
-        <thead><tr><th></th><th>LDAP</th><th>NOMBRE</th><th>LIDER</th><th>TURNO</th><th>Rol expert</th><th>Curso</th></tr></thead>
-        <tbody>
-          <tr><td>1.</td><td>usuario_demo01</td><td>USUARIO DEMO 1</td><td>LÍDER DEMO A</td><td>2A</td><td><span class="tf ok">TRUE</span></td><td><span class="tf ok">TRUE</span></td></tr>
-          <tr><td>2.</td><td>usuario_demo02</td><td>USUARIO DEMO 2</td><td>LÍDER DEMO B</td><td>1B</td><td><span class="tf ok">TRUE</span></td><td><span class="tf ok">TRUE</span></td></tr>
-          <tr><td>3.</td><td>usuario_demo03</td><td>USUARIO DEMO 3</td><td>LÍDER DEMO A</td><td>1A</td><td><span class="tf ok">TRUE</span></td><td><span class="tf no">FALSE</span></td></tr>
-          <tr><td>4.</td><td>usuario_demo04</td><td>USUARIO DEMO 4</td><td>LÍDER DEMO C</td><td>3A</td><td><span class="tf ok">TRUE</span></td><td><span class="tf ok">TRUE</span></td></tr>
-          <tr><td>5.</td><td>usuario_demo05</td><td>USUARIO DEMO 5</td><td>LÍDER DEMO B</td><td>1B</td><td><span class="tf ok">TRUE</span></td><td><span class="tf no">FALSE</span></td></tr>
-          <tr><td>6.</td><td>usuario_demo06</td><td>USUARIO DEMO 6</td><td>LÍDER DEMO C</td><td>2B</td><td><span class="tf ok">TRUE</span></td><td><span class="tf ok">TRUE</span></td></tr>
-        </tbody>
-      </table>
-      <div class="pager"><span>1 - 6 / 45</span><span>‹</span><span>›</span></div>
-    </div>
-    <button class="hs" data-step="6" type="button" aria-label="Explicación 7">7</button>
-  </section>
-
-  <!-- 8 · Filtros (verde) -->
-  <section class="lk-sec mid" id="sec-filtros-verde">
-    <div class="card teal">
-      <div class="flt-head"><div class="badge"><svg><use href="#i-funnel"/></svg></div><div><h3>Explora el detalle por representante</h3><p>Filtra la tabla por identificador, nombre, líder o turno.</p></div></div>
-      <div class="flt-row">
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-id"/></svg></div><b>LDAP</b></div><div class="sel">LDAP</div></div>
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-user"/></svg></div><b>Nombre</b></div><div class="sel">NOMBRE</div></div>
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-org"/></svg></div><b>Líder</b></div><div class="sel">LIDER</div></div>
-        <div class="f"><div class="f-top"><div class="badge"><svg><use href="#i-clock"/></svg></div><b>Turno</b></div><div class="sel">TURNO</div></div>
-      </div>
-    </div>
-    <button class="hs" data-step="7" type="button" aria-label="Explicación 8">8</button>
-  </section>
-
-  <!-- 9 · Capacitados + Training -->
-  <section class="lk-sec" id="sec-capacitados">
-    <div class="duo">
-      <div class="card teal stat">
-        <div class="stat-title">Listado de personas con curso aplicado · Check-In Expert</div>
-        <div class="stat-body">
-          <div class="badge"><svg><use href="#i-users"/></svg></div>
-          <span class="stat-num">410</span>
-          <div class="txt"><b>Capacitados</b><small>Representantes con curso aplicado</small></div>
+    <section class="card blue sec" id="sec-warehouse">
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <h2 id="t-wh"></h2>
+          <p class="sub" id="t-wh-d" style="margin:0"></p>
+        </div>
+        <div style="min-width:200px">
+          <div class="sel-tt" id="t-wh-f"></div>
+          <div class="sel" id="v-wh-f"></div>
         </div>
       </div>
-      <div class="card teal info t">
-        <div class="stat-title">Información de Training</div>
-        <div class="in">
-          <div class="badge"><svg><use href="#i-clip"/></svg></div>
-          <div class="txt"><h3>Representantes con el curso aplicado por el equipo de Training.</h3><p class="s">Consulta el listado para ver el detalle de cada persona.</p></div>
+      <div class="tbl-wrap" style="margin-top:14px">
+        <table class="tbl">
+          <thead><tr>
+            <th></th><th>WAREHOUSE</th><th>Proceso madre check in</th><th>EXPERT</th><th>% Expert</th>
+            <th>Falta curso</th><th>% Falta curso</th><th>A mejorar</th><th>% A mejorar</th><th>% Uso de rol</th>
+          </tr></thead>
+          <tbody id="wh-body"></tbody>
+        </table>
+        <div class="pager"><span id="wh-pager"></span></div>
+      </div>
+      <button class="hs" data-step="4" type="button">2</button>
+    </section>
+
+    <section class="card teal sec" id="sec-filtros">
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;align-items:start">
+        <div>
+          <h2 id="t-que"></h2>
+          <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#1A73E8" id="t-que-1"></p>
+          <p class="sub" style="margin:0 0 8px" id="t-que-2"></p>
+          <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#0E2150" id="t-que-3"></p>
+          <p class="sub" style="margin:0" id="t-que-4"></p>
+        </div>
+        <div>
+          <h3 style="margin:0;font-size:18px;color:#0E2150" id="t-flt"></h3>
+          <p class="sub" style="margin:2px 0 6px" id="t-flt-d"></p>
+          <div class="sel-row">
+            <div><label id="l-ldap"></label><select class="sel" id="f-ldap"></select></div>
+            <div><label id="l-lider"></label><select class="sel" id="f-lider"></select></div>
+            <div><label id="l-estatus"></label><select class="sel" id="f-estatus"></select></div>
+          </div>
         </div>
       </div>
-    </div>
-    <button class="hs" data-step="8" type="button" aria-label="Explicación 9">9</button>
-  </section>
+      <button class="hs" data-step="5" type="button">3</button>
+    </section>
 
-  <!-- 10 · Tabla de capacitados -->
-  <section class="lk-sec" id="sec-tabla-curso">
-    <div class="tbl-wrap teal lk-scroll">
-      <table class="tbl">
-        <thead><tr><th></th><th>LDAP</th><th>NOMBRE</th><th>LIDER</th><th>TURNO</th><th>FECHA_INGRESO</th><th>Curso aplicado</th><th>COMPLETADO</th></tr></thead>
-        <tbody>
-          <tr><td>1.</td><td>usuario_demo01</td><td>USUARIO DEMO 1</td><td>LÍDER DEMO A</td><td>3A</td><td>22 ene 2025</td><td><span class="tf ok">TRUE</span></td><td>1</td></tr>
-          <tr><td>2.</td><td>usuario_demo02</td><td>USUARIO DEMO 2</td><td>LÍDER DEMO B</td><td>1A</td><td>14 abr 2026</td><td><span class="tf ok">TRUE</span></td><td>1</td></tr>
-          <tr><td>3.</td><td>usuario_demo03</td><td>USUARIO DEMO 3</td><td>LÍDER DEMO A</td><td>MIXTO</td><td>3 jul 2024</td><td><span class="tf ok">TRUE</span></td><td>1</td></tr>
-          <tr><td>4.</td><td>usuario_demo04</td><td>USUARIO DEMO 4</td><td>LÍDER DEMO C</td><td>2B</td><td>12 may 2025</td><td><span class="tf ok">TRUE</span></td><td>1</td></tr>
-          <tr><td>5.</td><td>usuario_demo05</td><td>USUARIO DEMO 5</td><td>LÍDER DEMO B</td><td>1B</td><td>28 mar 2022</td><td><span class="tf ok">TRUE</span></td><td>1</td></tr>
-        </tbody>
-      </table>
-      <div class="pager"><span>1 - 5 / 410</span><span>‹</span><span>›</span></div>
-    </div>
-    <button class="hs" data-step="9" type="button" aria-label="Explicación 10">10</button>
-  </section>
+    <section class="card gold sec" id="sec-tarjetas">
+      <div class="trio">
+        <div id="c-expert">
+          <h3 id="c1-t"></h3>
+          <div class="lbl" id="c1-l"></div>
+          <p id="c1-p1"></p>
+          <div class="stats">
+            <div class="st"><div class="n" id="c1-n"></div><div class="c" id="c1-c"></div></div>
+            <div class="st"><div class="n" id="c1-pn"></div><div class="c" id="c1-pc"></div></div>
+          </div>
+        </div>
+        <div id="c-falta">
+          <h3 id="c2-t"></h3>
+          <div class="lbl" id="c2-l"></div>
+          <p id="c2-p1"></p>
+          <p id="c2-p2"></p>
+          <div class="stats">
+            <div class="st"><div class="n" id="c2-n"></div><div class="c" id="c2-c"></div></div>
+            <div class="st"><div class="n red" id="c2-pn"></div><div class="c" id="c2-pc"></div></div>
+          </div>
+        </div>
+        <div id="c-mejorar">
+          <h3 id="c3-t"></h3>
+          <div class="lbl" id="c3-l"></div>
+          <p id="c3-p1"></p>
+          <div class="stats">
+            <div class="st"><div class="n" id="c3-n"></div><div class="c" id="c3-c"></div></div>
+            <div class="st"><div class="n red" id="c3-pn"></div><div class="c" id="c3-pc"></div></div>
+          </div>
+        </div>
+      </div>
+      <button class="hs" data-step="6" type="button">4</button>
+    </section>
 
+    <section class="card gold sec" id="sec-detalle">
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>LDAP (REP)</th><th>LIDER</th><th>ESTATUS</th><th>CUMPLE</th><th>FALTA</th><th>Rol expert</th><th>Curso</th>
+          </tr></thead>
+          <tbody id="det-body"></tbody>
+        </table>
+        <div class="pager"><span id="det-pager"></span></div>
+      </div>
+      <button class="hs" data-step="9" type="button">5</button>
+    </section>
+
+  </div>
+
+  <!-- ===================== PERFORMANCE ===================== -->
+  <div class="pg" id="pg-performance" hidden>
+
+    <section class="card gold sec" id="sec-perf-each">
+      <div style="background:#0E2150;color:#fff;text-align:center;font-size:22px;font-weight:700;padding:14px;border-radius:10px;margin-bottom:12px" id="p-title"></div>
+      <div class="card blue" style="padding:12px 14px">
+        <h3 style="margin:0 0 2px;font-size:17px;color:#0E2150" id="p-flt-t"></h3>
+        <p class="sub" style="margin:0 0 8px" id="p-flt-d"></p>
+        <div class="sel-row4">
+          <div><label id="pl-wh"></label><div class="sel">WAREHOUSE</div></div>
+          <div><label id="pl-nom"></label><div class="sel">LDAP</div></div>
+          <div><label id="pl-lid"></label><div class="sel">LIDER</div></div>
+          <div><label id="pl-fec"></label><div class="sel" id="pl-fec-v"></div></div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:12px" id="p-note-each"></div>
+      <div class="kpis4">
+        <div class="k4" id="kpi-op"><h4 id="e-k1"></h4><div class="v" id="e-v1"></div><small id="e-s1"></small></div>
+        <div class="k4" id="kpi-real"><h4 id="e-k2"></h4><div class="v" id="e-v2"></div><small id="e-s2"></small></div>
+        <div class="k4" id="kpi-adh"><h4 id="e-k3"></h4><div class="v" id="e-v3"></div><small id="e-s3"></small></div>
+        <div class="k4" id="kpi-target"><h4 id="e-k4"></h4><div class="v" id="e-v4"></div><small id="e-s4"></small></div>
+      </div>
+      <button class="hs" data-step="10" type="button">6</button>
+    </section>
+
+    <section class="chart sec" id="sec-each-trend">
+      <div class="hd"><h3 id="ch1-t"></h3><p id="ch1-s"></p></div>
+      <div class="legend" id="ch1-leg"></div>
+      <div class="body"><svg id="ch1" viewBox="0 0 900 260"></svg></div>
+    </section>
+
+    <section class="chart sec" id="sec-rol-trend">
+      <div class="hd"><h3 id="ch2-t"></h3><p id="ch2-s"></p></div>
+      <div class="legend" id="ch2-leg"></div>
+      <div class="body"><svg id="ch2" viewBox="0 0 900 260"></svg></div>
+    </section>
+
+    <section class="card gold sec" id="sec-perf-kpi">
+      <div class="note" id="p-note-prod"></div>
+      <div class="kpis4">
+        <div class="k4" id="kpi-neta"><h4 id="p-k1"></h4><div class="v" id="p-v1"></div><small id="p-s1"></small></div>
+        <div class="k4" id="kpi-epm"><h4 id="p-k2"></h4><div class="v" id="p-v2"></div><small id="p-s2"></small></div>
+        <div class="k4" id="kpi-sku"><h4 id="p-k3"></h4><div class="v" id="p-v3"></div><small id="p-s3"></small></div>
+        <div class="k4" id="kpi-uni"><h4 id="p-k4"></h4><div class="v" id="p-v4"></div><small id="p-s4"></small></div>
+      </div>
+    </section>
+
+    <section class="chart sec" id="sec-prod-trend">
+      <div class="hd"><h3 id="ch3-t"></h3><p id="ch3-s"></p></div>
+      <div class="legend" id="ch3-leg"></div>
+      <div class="body"><svg id="ch3" viewBox="0 0 900 260"></svg></div>
+    </section>
+
+    <section class="card gold sec" id="sec-detalle-colab">
+      <h2 id="d-t"></h2>
+      <p class="sub" id="d-d"></p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>LDAP (rep)</th><th>Lider</th><th>Dia</th><th>Baseline</th><th>Neta sistemica</th><th>Efectiva</th><th>Unidades</th><th>Utilizacion</th>
+          </tr></thead>
+          <tbody id="dc-body"></tbody>
+        </table>
+        <div class="pager"><span id="dc-pager"></span></div>
+      </div>
+    </section>
+
+    <section class="card blue sec" id="sec-perf-feedback">
+      <h2 id="f-t"></h2>
+      <p class="sub" id="f-d"></p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>Warehouse</th><th>LDAP (REP)</th><th>Líder</th><th>ESTADO</th><th>Diagnóstico</th><th>Feedback sugerido</th><th>Prod neta</th><th>Baseline</th><th>EPM</th>
+          </tr></thead>
+          <tbody id="fb-body"></tbody>
+        </table>
+        <div class="pager"><span id="fb-pager"></span></div>
+      </div>
+    </section>
+
+    <section class="card gold sec" id="sec-retiros">
+      <div class="ret" id="ret-root"></div>
+      <button class="hs" data-step="23" type="button">7</button>
+    </section>
+
+  </div>
+
+  <div class="foot" id="foot"></div>
 </main>
 
-<!-- Capa del recorrido -->
-<div class="gx-block" id="gx-block"></div>
-<div class="gx-ring" id="gx-ring"></div>
-<div class="gx-card" id="gx-card" role="dialog" aria-live="polite">
-  <div class="gx-top"><span class="gx-chap" id="gx-chap"></span><span class="gx-count" id="gx-count"></span></div>
-  <div class="gx-prog"><i id="gx-bar"></i></div>
-  <h3 class="gx-title" id="gx-title"></h3>
-  <p class="gx-text" id="gx-text"></p>
-  <div class="gx-do"><div class="gx-lbl">Cómo usarlo</div><ul id="gx-steps"></ul></div>
-  <div class="gx-actions">
-    <button class="gx-btn gx-ghost" id="gx-skip" type="button">Salir</button>
-    <span class="gx-sp"></span>
-    <button class="gx-btn" id="gx-prev" type="button">← Atrás</button>
-    <button class="gx-btn gx-primary" id="gx-next" type="button">Siguiente →</button>
-  </div>
-</div>
+<button class="fab" id="fab" type="button"></button>
 
-<div class="gx-modal" id="gx-welcome" role="dialog" aria-modal="true" aria-labelledby="gx-w-title">
-  <div class="gx-panel">
-    <div class="gx-panel-head">
-      <div class="gx-eyebrow">Onboarding · Looker Studio</div>
-      <h2 id="gx-w-title">Bienvenido al tablero de Usuarios Expert</h2>
-      <p>Te mostramos cada parte del tablero en 10 pasos cortos.</p>
+<div class="wm" id="wm" role="dialog" aria-modal="true">
+  <div class="wp">
+    <div class="wh">
+      <small id="w-eye"></small>
+      <h2 id="w-title"></h2>
+      <p id="w-sub"></p>
     </div>
-    <div class="gx-panel-body">
-      <ul>
-        <li>Verás el tablero tal como está en Looker Studio, con cada sección resaltada.</li>
-        <li>Avanza con <b>Siguiente</b> o con las flechas del teclado. <b>Esc</b> para salir.</li>
-        <li>Después puedes tocar cualquier círculo <b>amarillo</b> para ver solo esa explicación.</li>
-      </ul>
-      <div class="gx-panel-actions">
-        <button class="gx-btn" id="gx-w-free" type="button">Explorar por mi cuenta</button>
-        <button class="gx-btn gx-primary" id="gx-w-go" type="button">Iniciar recorrido</button>
+    <div class="wb">
+      <ul id="w-list"></ul>
+      <div class="acts">
+        <button class="btn" id="w-free" type="button"></button>
+        <button class="btn pri" id="w-go" type="button"></button>
       </div>
     </div>
   </div>
 </div>
 
-<button class="gx-fab" id="gx-fab" type="button">▶ Recorrido guiado</button>
+<div class="ring" id="ring"></div>
+<div class="tour" id="tour">
+  <div class="cnt" id="t-cnt"></div>
+  <h3 id="t-title"></h3>
+  <div id="t-text"></div>
+  <div class="how"><b id="t-how-lbl"></b><ul id="t-how"></ul></div>
+  <div class="acts">
+    <button class="btn ghost" id="t-exit" type="button"></button>
+    <span style="flex:1"></span>
+    <button class="btn" id="t-prev" type="button"></button>
+    <button class="btn pri" id="t-next" type="button"></button>
+  </div>
+</div>
 
 <script>
 (function(){
-  var STEPS = [
-    { sel:'#sec-tabs', title:'Pestañas del tablero',
-      text:'Esta pestaña te muestra el nivel de <b>adopción general</b> de nuestros usuarios expertos. Haz clic aquí para <b>filtrar los datos</b> y ver el avance global.',
-      steps:['Estás en <b>Adopción: Usuarios Expert</b> (subrayada en azul).','Las pestañas <b>Productividad</b> y <b>Each masivo</b> abren otras vistas.'] },
-    { sel:'#sec-panorama', title:'Panorama de adopción del Rol Expert',
-      text:'Resumen en tres indicadores: el <b>HC Check-In</b> (total de representantes), el porcentaje con <b>Rol Expert activo</b> y los <b>Capacitados</b> sobre el total.',
-      steps:['Lee los tres indicadores de izquierda a derecha.','Los porcentajes se calculan sobre el total de representantes de Check-In.'] },
-    { sel:'#sec-warehouse', title:'Adherencia por warehouse',
-      text:'Compara cada warehouse: nativos, personas con rol, nativos con rol, <b>% de adherencia</b> y <b>% con curso</b>.',
-      steps:['Los colores más intensos marcan los porcentajes más altos.','Usa las flechas de la esquina inferior para paginar si hay más filas.'] },
-    { sel:'#sec-banner', title:'Adopción y capacitación por Warehouse',
-      text:'Las barras comparan personas, nativos (proceso madre Check-In), representantes con Rol Expert y nativos con rol. Las líneas muestran <b>adherencia</b> y <b>porcentaje con curso aplicado</b>.',
-      steps:['Abre <b>Filtra por warehouse</b> y elige el que quieres revisar.','El tablero se actualiza para ese warehouse.'] },
-    { sel:'#sec-filtros', title:'Explora el detalle por representante',
-      text:'Estos cuatro filtros acotan la tabla de abajo por <b>LDAP</b>, <b>nombre</b>, <b>líder</b> o <b>turno</b>.',
-      steps:['Abre cualquier lista y selecciona un valor.','Puedes combinar filtros, por ejemplo un líder y un turno.'] },
-    { sel:'#sec-roles', title:'Listado de roles activos · Check-In Expert',
-      text:'Muestra cuántos <b>Expertos activos</b> hay (roles activos de Check-In Expert) y qué porcentaje representan. A la derecha, <b>¿Qué representa?</b> explica la métrica: permiso Rol Expert activo y estado del curso.',
-      steps:['Detecta permisos activos sin curso registrado; esos casos requieren revisión.'] },
-    { sel:'#sec-tabla-roles', title:'Tabla de roles activos',
-      text:'Una fila por colaborador con su <b>LDAP</b>, <b>nombre</b>, <b>líder</b> y <b>turno</b>, más dos marcas: <b>Rol expert</b> y <b>Curso</b>.',
-      steps:['✅ <b>TRUE</b>: lo tiene. ❌ <b>FALSE</b>: no lo tiene.','Un Rol expert en TRUE con Curso en FALSE es un permiso sin curso registrado.'] },
-    { sel:'#sec-filtros-verde', title:'Filtros del listado de capacitados',
-      text:'Funcionan igual que los anteriores: filtran la tabla verde por <b>LDAP</b>, <b>nombre</b>, <b>líder</b> o <b>turno</b>.',
-      steps:['Selecciona un valor en cualquiera de las cuatro listas.'] },
-    { sel:'#sec-capacitados', title:'Capacitados · Información de Training',
-      text:'Muestra el total de <b>Capacitados</b>: representantes con el curso aplicado por el equipo de Training. Consulta el listado de abajo para ver el detalle de cada persona.',
-      steps:['El número es el total con curso aplicado.'] },
-    { sel:'#sec-tabla-curso', title:'Tabla de detalle de capacitados',
-      text:'En esta tabla podrás dar <b>seguimiento individual</b> a cada colaborador. Puedes ver quién es su líder directo, su turno y confirmar si han completado el curso requerido (columna <b>COMPLETADO</b> con valor <b>1</b> o <b>TRUE</b>).',
-      steps:['<b>LDAP / NOMBRE</b>: identifican al colaborador.','<b>LIDER / TURNO</b>: su líder directo y su turno.','<b>FECHA_INGRESO</b>: cuándo ingresó.','<b>Curso aplicado / COMPLETADO</b>: 1 o TRUE = ya completó el curso.'] }
+  /* ============ Textos fijos (ES-MX / PT-BR) ============ */
+  var TXT = {
+    es: {
+      g_title:'Bienvenido al tablero de Usuarios Expert', g_sub:'Elige tu idioma para continuar.',
+      demo:'Datos de ejemplo: identificadores y cifras simulados.',
+      name:'Tablero de ejemplo · Check-in expert', restore:'Restablecer', share:'Compartir', edit:'Editar',
+      tab_adop:'Adopción: Usuarios Expert', tab_perf:'Performance',
+      panorama:'Panorama de adopción del Rol Expert',
+      hc_t:'HC Check-In', hc_d:'Total de representantes en Check-In',
+      rol_t:'Rol Expert activo', rol_d:'Representantes con Rol Expert activo sobre el total de Check-In',
+      cap_t:'Capacitados', cap_d:'Representantes capacitados sobre el total de Check-In',
+      wh_t:'Adopción y capacitación por Warehouse',
+      wh_d:'Las barras comparan personas, nativos (proceso madre Check-In), representantes con Rol Expert y nativos con rol. Las líneas muestran adherencia y porcentaje con curso aplicado.',
+      wh_f:'Filtra por warehouse',
+      que_t:'¿Qué representa?', que_1:'Permiso Rol Expert activo y estado del curso.',
+      que_2:'Aquí se detalla la cantidad de representantes por líder que tienen el rol de experto activo y los requerimientos necesarios.',
+      que_3:'O que representa?', que_4:'Permissão Rol Expert ativo e status do curso.',
+      flt_t:'Filtros rápidos', flt_d:'Selecciona los criterios para consultar la información.',
+      l_ldap:'LDAP', l_lider:'Líder', l_estatus:'Estatus', all:'Todos',
+      c1_t:'EXPERT', c1_l:'Expertos activos / Experts ativos', c1_p1:'ES · Tiene el rol activo.',
+      c2_t:'FALTA CURSO', c2_l:'Falta curso', c2_p1:'ES · No tiene el rol y cumple todo: antigüedad de 90 días, volumen, productividad y EPM. Solo le falta el curso o el permiso (rol).', c2_p2:'PT · Não tem a função ativa e cumpre todos os critérios. Falta apenas o curso ou a permissão (perfil).',
+      c3_t:'A MEJORAR', c3_l:'A mejorar / A melhorar', c3_p1:'ES · Le falta calidad (EPM), productividad, volumen o tiempo (menos de 90 días).',
+      c_n_c:'Conteo de reps / Contagem de reps', c_p_c:'% reps Check-In (proceso madre) / % reps Check-In (processo mãe)',
+      p_title:'Performance Each Masivo', p_flt_t:'Explora el detalle por representante', p_flt_d:'Filtra la tabla por warehouse, nombre del representante, líder o fecha.',
+      pl_wh:'Warehouse', pl_nom:'Nombre', pl_lid:'Líder', pl_fec:'Fecha', pl_fec_v:'Último mes (ejemplo)',
+      p_note_each:'ES · Tendencia semanal de unidades de ECH masivo procesadas, oportunidades y porcentaje de adherencia.  PT · Tendência semanal das unidades de ECH massivo processadas, oportunidades e percentual de aderência.',
+      e_k1:'OPORTUNIDAD / OPORTUNIDADE', e_s1:'Oportunidad / Oportunidade',
+      e_k2:'REALIZADO / REALIZADO', e_s2:'Realizado total / Realizado total',
+      e_k3:'% ADHERENCIA / % ADERÊNCIA', e_s3:'Adherencia / Aderência',
+      e_k4:'TARGET (FIJO) / TARGET (FIXO)', e_s4:'Meta establecida / Meta fixa',
+      ch1_t:'Tendencia de ECH Masivo y % de Adherencia por Semana', ch1_s:'Tendencia de ECH Masivo e % de Aderência por Semana',
+      ch2_t:'Tendencia semanal del % de uso del rol', ch2_s:'Tendência semanal do % de uso da função',
+      leg_pz:'PZ_TOTAL', leg_op:'OPORTUNIDAD_EACH', leg_re:'REALIZADO_TOTAL_EACH', leg_ad:'% Adherencia',
+      leg_us:'USUARIOS_TOTAL', leg_ur:'Usuarios que usaron el rol masivo', leg_pu:'% de uso del rol masivo',
+      p_note_prod:'ES · Productividad neta, EPM por mil, errores de SKU y errores de unidades.  PT · Produtividade líquida, EPM por mil, erros de SKU e erros de unidades.',
+      p_k1:'PRODUCTIVIDAD NETA / PRODUTIVIDADE LÍQUIDA', p_s1:'Productividad neta / Produtividade líquida',
+      p_k2:'EPM · ERRORES POR MIL / EPM · ERROS POR MIL', p_s2:'Mostrar como número / Exibir como número',
+      p_k3:'ERRORES DE SKU / ERROS DE SKU', p_s3:'Campo: SKUS_ERRORS / Cantidad de errores de SKU',
+      p_k4:'ERRORES DE UNIDADES / ERROS DE UNIDADES', p_s4:'Campo: UNITS_ERRORS / Cantidad de errores de unidades',
+      ch3_t:'Tendencia semanal de productividad neta y EPM', ch3_s:'Tendencia semanal de produtividad líquida e EPM',
+      leg_ns:'Neta sistemica', leg_epm:'EPM',
+      d_t:'Detalle por colaborador', d_d:'Consulta el detalle y revisa la productividad en DCI y Check-In.',
+      f_t:'Productividad y feedback por colaborador', f_d:'Compara productividad neta, baseline de 15 días y calidad (EPM); ofrece diagnóstico y feedback sugerido para priorizar al equipo.',
+      fb_pager:'1 - 8 / 8', dc_pager:'1 - 8 / 8', det_pager:'1 - 8 / 240', wh_pager:'1 - 3 / 3',
+      foot:'Fecha de la última actualización: 25/10/2026 · Política de privacidad (ejemplo)',
+      fab:'▶ Recorrido guiado', t_exit:'Salir', t_prev:'← Atrás', t_next:'Siguiente →', t_finish:'Finalizar ✓', t_how:'Cómo funciona',
+      w_eye:'Onboarding · Looker Studio', w_title:'Bienvenido al tablero de Usuarios Expert', w_sub:'Te explicamos de dónde sale cada dato, cómo se calcula y para qué sirve.',
+      w_list:['Cada paso dice de qué tabla sale el dato, qué filtro o fórmula usa y por qué existe.','Avanza con <b>Siguiente</b> o con las flechas del teclado. <b>Esc</b> para salir.','Puedes tocar cualquier círculo <b>amarillo</b> para ver solo esa explicación.'],
+      w_free:'Explorar por mi cuenta', w_go:'Iniciar recorrido'
+    },
+    pt: {
+      g_title:'Bem-vindo ao painel de Usuários Expert', g_sub:'Escolha seu idioma para continuar.',
+      demo:'Dados de exemplo: identificadores e números simulados.',
+      name:'Painel de exemplo · Check-in expert', restore:'Restaurar', share:'Compartilhar', edit:'Editar',
+      tab_adop:'Adoção: Usuários Expert', tab_perf:'Performance',
+      panorama:'Panorama de adoção do Rol Expert',
+      hc_t:'HC Check-In', hc_d:'Total de representantes em Check-In',
+      rol_t:'Rol Expert ativo', rol_d:'Representantes com Rol Expert ativo sobre o total de Check-In',
+      cap_t:'Capacitados', cap_d:'Representantes capacitados sobre o total de Check-In',
+      wh_t:'Adoção e capacitação por Warehouse',
+      wh_d:'As barras comparam pessoas, nativos (processo madre Check-In), representantes com Rol Expert e nativos com rol. As linhas mostram aderência e percentual com curso aplicado.',
+      wh_f:'Filtrar por warehouse',
+      que_t:'O que representa?', que_1:'Permissão Rol Expert ativa e status do curso.',
+      que_2:'Aqui é detalhada a quantidade de representantes por líder com a função expert ativa e os requisitos necessários.',
+      que_3:'¿Qué representa?', que_4:'Permiso Rol Expert activo y estado del curso.',
+      flt_t:'Filtros rápidos', flt_d:'Selecione os critérios para consultar as informações.',
+      l_ldap:'LDAP', l_lider:'Líder', l_estatus:'Status', all:'Todos',
+      c1_t:'EXPERT', c1_l:'Experts ativos / Expertos activos', c1_p1:'PT · Está com a função ativa.',
+      c2_t:'FALTA CURSO', c2_l:'Falta curso', c2_p1:'PT · Não tem a função ativa e cumpre todos os critérios (90 dias de empresa, volume, produtividade e EPM). Falta apenas o curso ou a permissão (perfil).', c2_p2:'ES · No tiene el rol y cumple todo. Solo le falta el curso o el permiso (rol).',
+      c3_t:'A MEJORAR', c3_l:'A melhorar / A mejorar', c3_p1:'PT · Falta qualidade (EPM), produtividade, volume ou tempo de empresa (menos de 90 dias).',
+      c_n_c:'Contagem de reps / Conteo de reps', c_p_c:'% reps Check-In (processo mãe) / % reps Check-In (proceso madre)',
+      p_title:'Performance Each em massa', p_flt_t:'Explore o detalhe por representante', p_flt_d:'Filtre a tabela por warehouse, nome, líder ou data.',
+      pl_wh:'Warehouse', pl_nom:'Nome', pl_lid:'Líder', pl_fec:'Data', pl_fec_v:'Último mês (exemplo)',
+      p_note_each:'PT · Tendência semanal das unidades de ECH massivo processadas, oportunidades e percentual de aderência.  ES · Tendencia semanal de unidades de ECH masivo procesadas, oportunidades y porcentaje de adherencia.',
+      e_k1:'OPORTUNIDADE / OPORTUNIDAD', e_s1:'Oportunidade / Oportunidad',
+      e_k2:'REALIZADO / REALIZADO', e_s2:'Realizado total / Realizado total',
+      e_k3:'% ADERÊNCIA / % ADHERENCIA', e_s3:'Aderência / Adherencia',
+      e_k4:'TARGET (FIXO) / TARGET (FIJO)', e_s4:'Meta fixa / Meta establecida',
+      ch1_t:'Tendência de ECH Massivo e % de Aderência por Semana', ch1_s:'Tendencia de ECH Masivo y % de Adherencia por Semana',
+      ch2_t:'Tendência semanal do % de uso do rol', ch2_s:'Tendencia semanal del % de uso del rol',
+      leg_pz:'PZ_TOTAL', leg_op:'OPORTUNIDAD_EACH', leg_re:'REALIZADO_TOTAL_EACH', leg_ad:'% Aderência',
+      leg_us:'USUARIOS_TOTAL', leg_ur:'Usuários que usaram o rol em massa', leg_pu:'% de uso do rol em massa',
+      p_note_prod:'PT · Produtividade líquida, EPM por mil, erros de SKU e erros de unidades.  ES · Productividad neta, EPM por mil, errores de SKU y errores de unidades.',
+      p_k1:'PRODUTIVIDADE LÍQUIDA / PRODUCTIVIDAD NETA', p_s1:'Produtividade líquida / Productividad neta',
+      p_k2:'EPM · ERROS POR MIL / EPM · ERRORES POR MIL', p_s2:'Exibir como número / Mostrar como número',
+      p_k3:'ERROS DE SKU / ERRORES DE SKU', p_s3:'Campo: SKUS_ERRORS / Quantidade de erros de SKU',
+      p_k4:'ERROS DE UNIDADES / ERRORES DE UNIDADES', p_s4:'Campo: UNITS_ERRORS / Quantidade de erros de unidades',
+      ch3_t:'Tendência semanal de produtividade líquida e EPM', ch3_s:'Tendencia semanal de productividad neta y EPM',
+      leg_ns:'Líquida sistêmica', leg_epm:'EPM',
+      d_t:'Detalhe por colaborador', d_d:'Consulte o detalhe e revise a produtividade no DCI e no Check-In.',
+      f_t:'Produtividade e feedback por colaborador', f_d:'Compara produtividade líquida, baseline de 15 dias e qualidade (EPM); oferece diagnóstico e feedback sugerido para priorizar a equipe.',
+      fb_pager:'1 - 8 / 8', dc_pager:'1 - 8 / 8', det_pager:'1 - 8 / 240', wh_pager:'1 - 3 / 3',
+      foot:'Data da última atualização: 25/10/2026 · Política de privacidade (exemplo)',
+      fab:'▶ Tour guiado', t_exit:'Sair', t_prev:'← Voltar', t_next:'Próximo →', t_finish:'Concluir ✓', t_how:'Como funciona',
+      w_eye:'Onboarding · Looker Studio', w_title:'Bem-vindo ao painel de Usuários Expert', w_sub:'Explicamos de onde sai cada dado, como ele é calculado e para que serve.',
+      w_list:['Cada passo diz de qual tabela sai o dado, qual filtro ou fórmula usa e por que existe.','Avance com <b>Próximo</b> ou com as setas do teclado. <b>Esc</b> para sair.','Você pode tocar em qualquer círculo <b>amarelo</b> para ver só aquela explicação.'],
+      w_free:'Explorar por conta própria', w_go:'Iniciar percurso'
+    }
+  };
+  function B(es, pt){ return lang === 'pt' ? pt : es; }
+
+  /* ============ Recorrido: arquitectura de cada elemento (origen, lógica y por qué) ============ */
+  var TOUR = {
+    es: [
+      {sel:'.tabs', title:'Cómo está armado el tablero', text:'Se alimenta de cuatro tablas en <b>meli-sbox.CONTROLTOWERRC3</b>. Ninguna gráfica calcula datos desde cero: solo suman, dividen y filtran lo que ya está en esas tablas.', src:'ROL_EXPERT_HC_CHECKIN_MLM · ROL_EXPERT_PRODU_MLM · ROL_EXPERT_EACH_MASIVO_MLM · ROL_EXPERT_HIST_EVENTOS', how:['Adopción usa HC, Each (partes) y estatus.','Performance usa productividad, EPM, Each y el histórico de retiros.','Las tablas se regeneran con el script maestro de MXRC03/MLM.']},
+      {sel:'#kpi-hc', title:'HC Check-In', text:'Personas cuyo <b>proceso madre</b> en LMS es <b>checkin</b>. Solo ellas cuentan en el HC: es la base de todos los porcentajes del panorama.', src:'ROL_EXPERT_HC_CHECKIN_MLM · PROCESO_MADRE de DM_LMS_PRODUCTIVITY', how:['Proceso madre = checkin (no cuentan apoyo ni otros procesos).','Sale de la tabla HC, no de Looker.']},
+      {sel:'#kpi-rol', title:'Rol Expert activo (%)', text:'Porcentaje del HC con el <b>rol Expert activo</b> en Kraken. Mide quién tiene el permiso, no quién tiene el curso.', src:'ROL_ACTIVO (Kraken: FBM_INBOUND_CHECK_IN_OPERATOR_EXPERT, ACTIVE = TRUE)', how:['Fórmula: expertos activos ÷ HC Check-In.','Se muestra con dos decimales.']},
+      {sel:'#kpi-cap', title:'Capacitados (# y %)', text:'Personas que completaron el curso requerido en Learning Hub (cursos 10715, 10469 y 10718), sobre el HC.', src:'CURSO_APLICADO de ROL_EXPERT_HC_CHECKIN_MLM', how:['Un nulo significa sin curso registrado; se muestra —.']},
+      {sel:'#sec-warehouse', title:'Adopción por warehouse', text:'Una fila por <b>WAREHOUSE</b>. Cada % divide la columna entre el <b>proceso madre</b> de ese mismo warehouse, así cada sitio se compara consigo mismo.', src:'ROL_EXPERT_HC_CHECKIN_MLM agrupado por WAREHOUSE', how:['El filtro de warehouse cambia solo esta tabla.','% Uso de rol viene de los usuarios del rol masivo.']},
+      {sel:'#sec-filtros', title:'Qué representa y filtros', text:'Explica qué mide la tabla de abajo y permite filtrar por <b>LDAP</b>, <b>líder</b> o <b>estatus</b>. El líder viene del manager en People.', src:'LIDER de ROL_EXPERT_PRODU_MLM · ESTATUS de ROL_EXPERT_HC_CHECKIN_MLM', how:['Los filtros no cambian el panorama; solo el detalle.']},
+      {sel:'#c-expert', title:'EXPERT', text:'Personas con el rol activo y su porcentaje del proceso madre. Es el grupo que ya puede hacer el Each masivo.', src:'ESTATUS = EXPERT (ESTATUS_MLM)', how:['Conteo = número de personas con ESTATUS EXPERT.','% = conteo ÷ proceso madre.']},
+      {sel:'#c-falta', title:'FALTA CURSO', text:'Personas que cumplen los criterios (90 días de empresa, volumen, productividad y EPM) pero no tienen el curso o el permiso. Es la <b>lista de acción</b> para Training.', src:'ESTATUS = FALTA CURSO · criterios de la columna CUMPLE', how:['Solo les falta el curso o el permiso (rol).']},
+      {sel:'#c-mejorar', title:'A MEJORAR', text:'Personas que no cumplen todavía por calidad (EPM), productividad, volumen o tiempo en la empresa. Es un grupo de <b>acompañamiento</b>, no de permiso.', src:'ESTATUS = A MEJORAR · criterios de la columna FALTA', how:['Aplica a quienes tienen menos de 90 días o no alcanzan los umbrales.']},
+      {sel:'#sec-detalle', title:'Detalle por representante', text:'Una fila por representante. <b>CUMPLE</b> y <b>FALTA</b> son los criterios que pasa o no pasa; <b>Rol expert</b> y <b>Curso</b> son el permiso y el curso tal como están en la tabla.', src:'ROL_EXPERT_HC_CHECKIN_MLM (sin cálculo en Looker)', how:['TRUE: lo tiene. FALSE: no lo tiene.','Rol expert TRUE con Curso FALSE = permiso sin curso registrado.']},
+      {sel:'#kpi-op', title:'OPORTUNIDAD (EACH)', text:'Piezas que el sistema sugiere procesar con EACH masivo. Es lo que se podía hacer con el rol.', src:'SUM(OPORTUNIDAD_EACH) de ROL_EXPERT_EACH_MASIVO_MLM (MXRC03)', how:['Es el denominador de la adherencia.']},
+      {sel:'#kpi-real', title:'REALIZADO (EACH)', text:'Piezas que sí se procesaron con EACH masivo en el periodo.', src:'SUM(REALIZADO_TOTAL_EACH) de ROL_EXPERT_EACH_MASIVO_MLM', how:['Pendiente: confirmar si el numerador oficial es REALIZADO_TOTAL_EACH o REALIZADO_SUGERIDO.']},
+      {sel:'#kpi-adh', title:'% ADHERENCIA', text:'Qué tanto de lo sugerido se hizo. Se calcula sobre totales, no como promedio de porcentajes, porque un promedio daría el mismo peso a un warehouse pequeño y a uno grande.', src:'SUM(realizado) ÷ SUM(oportunidad)', how:['Se muestra con dos decimales.']},
+      {sel:'#kpi-target', title:'TARGET (FIJO)', text:'Meta de adherencia que definió el negocio. No se calcula con los datos: se compara la adherencia real contra esta cifra.', src:'Valor fijo en Looker (85 %)', how:['Si cambia la meta, se cambia en Looker, no en las tablas.']},
+      {sel:'#sec-each-trend', title:'Tendencia de EACH masivo', text:'Por semana: PZ total (barras oscuras), oportunidad (barras claras), realizado (barras azules) y % de adherencia (línea). Las semanas van de domingo a sábado, como en la query de GNP.', src:'ROL_EXPERT_EACH_MASIVO_MLM agrupado por semana', how:['La semana en curso está incompleta: su valor baja hasta que cierra.']},
+      {sel:'#sec-rol-trend', title:'Tendencia del uso del rol', text:'Por semana: usuarios totales (barras azules), usuarios que usaron el rol masivo (barras naranjas) y % de uso (línea).', src:'Usuarios del rol masivo por semana', how:['% de uso = usuarios que usaron el rol ÷ usuarios totales.']},
+      {sel:'#kpi-neta', title:'Productividad neta', text:'Piezas por hora del monitor del LMS. Usa las horas totales del monitor (proceso, no sistémico, no disponible y ociosidad), no solo las horas de proceso.', src:'SUM(UNIDADES) ÷ SUM(HORAS_TOTAL_MONITOR) de ROL_EXPERT_PRODU_MLM', how:['Se suma primero y se divide después, para que el resultado coincida con el monitor.']},
+      {sel:'#kpi-epm', title:'EPM (errores por mil)', text:'Errores por cada mil piezas procesadas en checkin, promediando unidades y SKUs para que ambas pesen igual.', src:'Calidad checkin de BT_QUALITY_BUCKETS, en ROL_EXPERT_PRODU_MLM', how:['EPM = (SUM(UNITS_ERRORS)/SUM(UNITS_PROCESSED)×1000 + SUM(SKUS_ERRORS)/SUM(SKUS_PROCESSED)×1000) ÷ 2.','Un EPM más bajo es mejor.']},
+      {sel:'#kpi-sku', title:'Errores de SKU', text:'Total de SKUs con error de check-in en el periodo. Ayuda a ver si el problema es de variedad de productos.', src:'SUM(SKUS_ERRORS) de ROL_EXPERT_PRODU_MLM', how:['Campo sin cálculo adicional.']},
+      {sel:'#kpi-uni', title:'Errores de unidades', text:'Total de piezas con error de check-in en el periodo. Es el complemento de los SKUs.', src:'SUM(UNITS_ERRORS) de ROL_EXPERT_PRODU_MLM', how:['Campo sin cálculo adicional.']},
+      {sel:'#sec-prod-trend', title:'Tendencia de productividad y EPM', text:'Por semana: productividad neta (barras) y EPM (línea). Sirve para ver si la velocidad sube sin que suba el error.', src:'ROL_EXPERT_PRODU_MLM agrupado por semana', how:['Si la productividad sube y el EPM también, hay que revisar calidad.']},
+      {sel:'#sec-detalle-colab', title:'Detalle por colaborador', text:'Por persona y día: baseline, neta sistémica, efectiva, unidades y utilización. El baseline es lo que la persona hizo en los 15 días anteriores y sirve para medir si hoy va bien.', src:'ROL_EXPERT_PRODU_MLM (una fila por persona, día y proceso)', how:['Neta sistémica = unidades ÷ horas de proceso.','Utilización = horas efectivas ÷ horas de proceso.']},
+      {sel:'#sec-perf-feedback', title:'Productividad y feedback', text:'Cada persona con su estado, diagnóstico y feedback sugerido. El estado sale de velocidad contra baseline y de calidad (EPM).', src:'FEEDBACK_COLABORADOR_MLM_DEV (en desarrollo; no está conectada a Looker todavía)', how:['Ordena por Prod neta o EPM para priorizar.']},
+      {sel:'#sec-retiros', title:'Historial de retiros del Rol Expert', text:'Cada vez que el permiso Rol Expert se <b>activa</b> o se <b>desactiva</b> para alguien, se guarda con fecha y hora. Así sabemos cuándo se le dio y cuándo se lo quitaron.', src:'ROL_EXPERT_HIST_EVENTOS, generada por SQL_HISTORICO_ROL_ACTIVO', how:['Cada hora la consulta compara el rol actual con el último evento de cada persona.','Si la consulta no corre, el histórico se queda sin ese cambio.']},
+      {sel:'#ret-motivos', title:'Por qué se quitó el permiso', text:'Cada desactivación se clasifica con las reglas de negocio. El motivo explica la causa, no solo que se quitó.', src:'Reglas de negocio aplicadas a ROL_EXPERT_HIST_EVENTOS + productividad y EPM previos', how:['Reversa: el rol se quitó y se volvió a poner casi de inmediato. Suele ser sincronización automática, no un retiro real.','Sin datos suficientes: no procesó piezas o procesó muy poco.','Productividad y calidad: falló en las dos.']},
+      {sel:'#ret-table', title:'Tabla de retiros por persona', text:'Una fila por caso: cuándo se le dio el rol (FECHA_ROL_ACTIVO), cuándo se lo quitaron (FECHA_REVERSA), el motivo, los días que duró y su desempeño antes y después.', src:'ROL_EXPERT_HIST_EVENTOS + ROL_EXPERT_PRODU_MLM (EPM y productividad de los días previos)', how:['DIAS_ANTES = días entre la activación y el retiro.','EPM_ANTES / PROD_ANTES = desempeño antes del retiro; EPM_DESPUES = después.']}
+    ],
+    pt: [
+      {sel:'.tabs', title:'Como o painel está montado', text:'Ele se alimenta de quatro tabelas em <b>meli-sbox.CONTROLTOWERRC3</b>. Nenhum gráfico calcula dados do zero: eles somam, dividem e filtram o que já está nessas tabelas.', src:'ROL_EXPERT_HC_CHECKIN_MLM · ROL_EXPERT_PRODU_MLM · ROL_EXPERT_EACH_MASIVO_MLM · ROL_EXPERT_HIST_EVENTOS', how:['Adoção usa HC, Each (partes) e status.','Performance usa produtividade, EPM, Each e o histórico de desligamentos.','As tabelas são regeneradas pelo script mestre de MXRC03/MLM.']},
+      {sel:'#kpi-hc', title:'HC Check-In', text:'Pessoas cujo <b>processo mãe</b> no LMS é <b>checkin</b>. Só elas contam no HC: é a base de todos os percentuais do panorama.', src:'ROL_EXPERT_HC_CHECKIN_MLM · PROCESO_MADRE de DM_LMS_PRODUCTIVITY', how:['Processo mãe = checkin (apoio e outros processos não contam).','Sai da tabela HC, não do Looker.']},
+      {sel:'#kpi-rol', title:'Rol Expert ativo (%)', text:'Percentual do HC com o <b>rol Expert ativo</b> no Kraken. Mede quem tem a permissão, não quem tem o curso.', src:'ROL_ACTIVO (Kraken: FBM_INBOUND_CHECK_IN_OPERATOR_EXPERT, ACTIVE = TRUE)', how:['Fórmula: experts ativos ÷ HC Check-In.','Mostrado com duas casas decimais.']},
+      {sel:'#kpi-cap', title:'Capacitados (# e %)', text:'Pessoas que concluíram o curso exigido no Learning Hub (cursos 10715, 10469 e 10718), sobre o HC.', src:'CURSO_APLICADO de ROL_EXPERT_HC_CHECKIN_MLM', how:['Nulo = sem curso registrado; aparece como —.']},
+      {sel:'#sec-warehouse', title:'Adoção por warehouse', text:'Uma linha por <b>WAREHOUSE</b>. Cada % divide a coluna pelo <b>processo mãe</b> do mesmo warehouse, então cada site é comparado com ele mesmo.', src:'ROL_EXPERT_HC_CHECKIN_MLM agrupado por WAREHOUSE', how:['O filtro de warehouse muda só esta tabela.','% Uso do rol vem dos usuários do rol em massa.']},
+      {sel:'#sec-filtros', title:'O que representa e filtros', text:'Explica o que a tabela de baixo mede e permite filtrar por <b>LDAP</b>, <b>líder</b> ou <b>status</b>. O líder vem do gestor no People.', src:'LIDER de ROL_EXPERT_PRODU_MLM · ESTATUS de ROL_EXPERT_HC_CHECKIN_MLM', how:['Os filtros não mudam o panorama; mudam só o detalhe.']},
+      {sel:'#c-expert', title:'EXPERT', text:'Pessoas com o rol ativo e seu percentual do processo mãe. É o grupo que já pode fazer o Each em massa.', src:'ESTATUS = EXPERT (ESTATUS_MLM)', how:['Contagem = pessoas com ESTATUS EXPERT.','% = contagem ÷ processo mãe.']},
+      {sel:'#c-falta', title:'FALTA CURSO', text:'Pessoas que cumprem os critérios (90 dias de empresa, volume, produtividade e EPM), mas não têm o curso ou a permissão. É a <b>lista de ação</b> para o Training.', src:'ESTATUS = FALTA CURSO · critérios da coluna CUMPLE', how:['Falta apenas o curso ou a permissão (perfil).']},
+      {sel:'#c-mejorar', title:'A MEJORAR', text:'Pessoas que ainda não cumprem por qualidade (EPM), produtividade, volume ou tempo de empresa. É um grupo de <b>acompanhamento</b>, não de permissão.', src:'ESTATUS = A MEJORAR · critérios da coluna FALTA', how:['Aplica a quem tem menos de 90 dias ou não atinge os limites.']},
+      {sel:'#sec-detalle', title:'Detalhe por representante', text:'Uma linha por representante. <b>CUMPLE</b> e <b>FALTA</b> são os critérios que a pessoa passa ou não; <b>Rol expert</b> e <b>Curso</b> são a permissão e o curso como estão na tabela.', src:'ROL_EXPERT_HC_CHECKIN_MLM (sem cálculo no Looker)', how:['TRUE: possui. FALSE: não possui.','Rol expert TRUE com Curso FALSE = permissão sem curso registrado.']},
+      {sel:'#kpi-op', title:'OPORTUNIDADE (EACH)', text:'Peças que o sistema sugere processar com EACH em massa. É o que poderia ser feito com o rol.', src:'SUM(OPORTUNIDAD_EACH) de ROL_EXPERT_EACH_MASIVO_MLM (MXRC03)', how:['É o denominador da aderência.']},
+      {sel:'#kpi-real', title:'REALIZADO (EACH)', text:'Peças que de fato foram processadas com EACH em massa no período.', src:'SUM(REALIZADO_TOTAL_EACH) de ROL_EXPERT_EACH_MASIVO_MLM', how:['Pendente: confirmar se o numerador oficial é REALIZADO_TOTAL_EACH ou REALIZADO_SUGERIDO.']},
+      {sel:'#kpi-adh', title:'% ADERÊNCIA', text:'Quanto do sugerido foi feito. Calcula-se sobre totais, não como média de porcentagens, porque uma média daria o mesmo peso a um warehouse pequeno e a um grande.', src:'SUM(realizado) ÷ SUM(oportunidade)', how:['Mostrado com duas casas decimais.']},
+      {sel:'#kpi-target', title:'TARGET (FIXO)', text:'Meta de aderência definida pelo negócio. Não é calculada com os dados: a aderência real é comparada com este valor.', src:'Valor fixo no Looker (85 %)', how:['Se a meta mudar, muda no Looker, não nas tabelas.']},
+      {sel:'#sec-each-trend', title:'Tendência de EACH em massa', text:'Por semana: PZ total (barras escuras), oportunidade (barras claras), realizado (barras azuis) e % de aderência (linha). As semanas vão de domingo a sábado, como na query de GNP.', src:'ROL_EXPERT_EACH_MASIVO_MLM agrupado por semana', how:['A semana em curso está incompleta: o valor sobe até ela fechar.']},
+      {sel:'#sec-rol-trend', title:'Tendência do uso do rol', text:'Por semana: usuários totais (barras azuis), usuários que usaram o rol em massa (barras laranjas) e % de uso (linha).', src:'Usuários do rol em massa por semana', how:['% de uso = usuários que usaram o rol ÷ usuários totais.']},
+      {sel:'#kpi-neta', title:'Produtividade líquida', text:'Peças por hora do monitor do LMS. Usa as horas totais do monitor (processo, não sistêmico, não disponível e ociosidade), não só as horas de processo.', src:'SUM(UNIDADES) ÷ SUM(HORAS_TOTAL_MONITOR) de ROL_EXPERT_PRODU_MLM', how:['Soma primeiro e divide depois, para o resultado bater com o monitor.']},
+      {sel:'#kpi-epm', title:'EPM (erros por mil)', text:'Erros por cada mil peças processadas no checkin, com unidades e SKUs pesando igual.', src:'Qualidade checkin de BT_QUALITY_BUCKETS, em ROL_EXPERT_PRODU_MLM', how:['EPM = (SUM(UNITS_ERRORS)/SUM(UNITS_PROCESSED)×1000 + SUM(SKUS_ERRORS)/SUM(SKUS_PROCESSED)×1000) ÷ 2.','Um EPM menor é melhor.']},
+      {sel:'#kpi-sku', title:'Erros de SKU', text:'Total de SKUs com erro no check-in no período. Ajuda a ver se o problema é de variedade de produtos.', src:'SUM(SKUS_ERRORS) de ROL_EXPERT_PRODU_MLM', how:['Campo sem cálculo adicional.']},
+      {sel:'#kpi-uni', title:'Erros de unidades', text:'Total de peças com erro no check-in no período. Complementa os SKUs.', src:'SUM(UNITS_ERRORS) de ROL_EXPERT_PRODU_MLM', how:['Campo sem cálculo adicional.']},
+      {sel:'#sec-prod-trend', title:'Tendência de produtividade e EPM', text:'Por semana: produtividade líquida (barras) e EPM (linha). Serve para ver se a velocidade sobe sem subir o erro.', src:'ROL_EXPERT_PRODU_MLM agrupado por semana', how:['Se a produtividade e o EPM sobem juntos, revise a qualidade.']},
+      {sel:'#sec-detalle-colab', title:'Detalhe por colaborador', text:'Por pessoa e dia: baseline, neta sistêmica, efetiva, unidades e utilização. O baseline é o que a pessoa fez nos 15 dias anteriores e serve para medir se hoje está bem.', src:'ROL_EXPERT_PRODU_MLM (uma linha por pessoa, dia e processo)', how:['Neta sistêmica = unidades ÷ horas de processo.','Utilização = horas efetivas ÷ horas de processo.']},
+      {sel:'#sec-perf-feedback', title:'Produtividade e feedback', text:'Cada pessoa com seu status, diagnóstico e feedback sugerido. O status sai da velocidade contra o baseline e da qualidade (EPM).', src:'FEEDBACK_COLABORADOR_MLM_DEV (em desenvolvimento; ainda não conectada ao Looker)', how:['Ordene por Prod neta ou EPM para priorizar.']},
+      {sel:'#sec-retiros', title:'Histórico de desligamentos do Rol Expert', text:'Cada vez que a permissão Rol Expert é <b>ativada</b> ou <b>desativada</b> para alguém, fica registrada com data e hora. Assim sabemos quando foi dada e quando foi retirada.', src:'ROL_EXPERT_HIST_EVENTOS, gerada por SQL_HISTORICO_ROL_ACTIVO', how:['A cada hora a consulta compara o rol atual com o último evento de cada pessoa.','Se a consulta não rodar, o histórico fica sem essa mudança.']},
+      {sel:'#ret-motivos', title:'Por que a permissão foi retirada', text:'Cada desativação é classificada com as regras de negócio. O motivo explica a causa, não só que a permissão foi retirada.', src:'Regras de negócio aplicadas a ROL_EXPERT_HIST_EVENTOS + produtividade e EPM anteriores', how:['Reversa: a função foi retirada e devolvida quase de imediato. Costuma ser sincronização automática, não um desligamento real.','Sem dados suficientes: não processou peças ou processou muito pouco.','Produtividade e qualidade: falhou nas duas.']},
+      {sel:'#ret-table', title:'Tabela de desligamentos por pessoa', text:'Uma linha por caso: quando recebeu o rol (FECHA_ROL_ACTIVO), quando foi retirado (FECHA_REVERSA), o motivo, quantos dias durou e o desempenho antes e depois.', src:'ROL_EXPERT_HIST_EVENTOS + ROL_EXPERT_PRODU_MLM (EPM e produtividade dos dias anteriores)', how:['DIAS_ANTES = dias entre a ativação e o desligamento.','EPM_ANTES / PROD_ANTES = desempenho antes; EPM_DESPUES = depois.']}
+    ]
+  };
+  var STEPS = TOUR.es;
+
+  /* ============ Datos de ejemplo (simulados) ============ */
+  var WH = [
+    {id:'WH_SIM_01', madre:1500, expert:3,  falta:450, mejorar:900, uso:0.50},
+    {id:'WH_SIM_02', madre:900,  expert:11, falta:270, mejorar:540, uso:0.64},
+    {id:'WH_SIM_03', madre:320,  expert:2,  falta:96,  mejorar:192, uso:0.80}
+  ];
+  var CAP = 320;
+  var USERS = [
+    {ldap:'sim_usr_01', lider:'LIDER DEMO A', estatus:'FALTA CURSO', cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD ✔', falta:'CURSO ✖ · FUNCIÓN ✖', rol:false, curso:false},
+    {ldap:'sim_usr_02', lider:'LIDER DEMO B', estatus:'FALTA CURSO', cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD ✔', falta:'CURSO ✖ · FUNCIÓN ✖', rol:false, curso:false},
+    {ldap:'sim_usr_03', lider:'LIDER DEMO C', estatus:'FALTA CURSO', cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD ✔', falta:'CURSO ✖ · FUNCIÓN ✖', rol:false, curso:false},
+    {ldap:'sim_usr_04', lider:'LIDER DEMO A', estatus:'A MEJORAR',   cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD',   falta:'EPM ✖ · CURSO ✖ · FUNCIÓN ✖', rol:false, curso:false},
+    {ldap:'sim_usr_05', lider:'LIDER DEMO B', estatus:'A MEJORAR',   cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD',   falta:'EPM ✖ · CURSO ✖ · FUNCIÓN ✖', rol:false, curso:false},
+    {ldap:'sim_usr_06', lider:'LIDER DEMO C', estatus:'EXPERT',      cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD ✔', falta:'—', rol:true, curso:true},
+    {ldap:'sim_usr_07', lider:'LIDER DEMO A', estatus:'EXPERT',      cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD ✔', falta:'—', rol:true, curso:true},
+    {ldap:'sim_usr_08', lider:'LIDER DEMO B', estatus:'FALTA CURSO', cumple:'TIEMPO DE EMPRESA ✔ · VOLUMEN ✔ · PRODUCTIVIDAD ✔', falta:'CURSO ✖ · FUNCIÓN ✖', rol:false, curso:false}
+  ];
+  var WEEKS = ['Sem 30','Sem 31','Sem 32','Sem 33','Sem 34','Sem 35','Sem 36','Sem 37','Sem 38','Sem 39','Sem 40','Sem 41','Sem 42','Sem 43'];
+  var PZ  = [10.0,11.2,10.8,11.5,11.0,10.4,10.9,11.8,11.3,10.6,11.9,12.1,11.4,10.2];
+  var OPO = [5.0,5.4,5.1,5.8,5.3,5.0,5.6,5.9,5.2,5.5,5.8,6.0,5.4,5.1];
+  var ADH = [0.00096,0.00112,0.00089,0.00104,0.00093,0.00101,0.00118,0.00087,0.00109,0.00095,0.00106,0.00098,0.00114,0.00092];
+  var USR_TOT = [3600,4000,3950,3800,3650,3450,3700,3600,3650,3500,3450,3500,3420,2300];
+  var USR_USO = [560,650,490,520,560,530,600,560,580,560,580,550,560,210];
+  var NETA = [240,235,238,231,233,229,236,241,230,238,242,236,239,244];
+  var EPMS = [4.8,4.6,4.7,4.5,4.4,4.6,4.3,4.2,4.1,4.4,4.0,4.2,4.1,3.9];
+  var SKU_ERR = 120.5, UNI_ERR = 180.2;
+  var FB = [
+    {wh:'WH_SIM_01', ldap:'sim_usr_21', lider:'lider_sim_a', est:'SIN DATOS', diag:'Horas insuficientes en la ventana · Calidad en riesgo', fb:'No hay horas suficientes para evaluar este período.', prod:null, base:null, epm:1.12},
+    {wh:'WH_SIM_01', ldap:'sim_usr_22', lider:'lider_sim_b', est:'EN ADAPTACIÓN', diag:'Curva de aprendizaje (menos de 90 días)', fb:'En Adaptación: colaborador de reciente ingreso. Continuar acompañamiento e inducción inicial.', prod:180.2, base:150.1, epm:0},
+    {wh:'WH_SIM_02', ldap:'sim_usr_23', lider:'lider_sim_c', est:'ALTO RENDIMIENTO', diag:'Velocidad sobre el 105% del baseline', fb:'Excelente desempeño. Considera apoyar a tus compañeros.', prod:231.5, base:210.0, epm:0},
+    {wh:'WH_SIM_02', ldap:'sim_usr_24', lider:'lider_sim_a', est:'SIN DATOS', diag:'Horas insuficientes en la ventana', fb:'No hay horas suficientes para evaluar este período.', prod:null, base:0, epm:0},
+    {wh:'WH_SIM_03', ldap:'sim_usr_25', lider:'lider_sim_b', est:'ALTO RENDIMIENTO', diag:'Velocidad sobre el 105% del baseline · Calidad en riesgo', fb:'Excelente desempeño. Considera apoyar a tus compañeros.', prod:205.1, base:180.3, epm:0.42},
+    {wh:'WH_SIM_01', ldap:'sim_usr_26', lider:'lider_sim_c', est:'ATENCIÓN PRIORITARIA', diag:'Velocidad crítica (menos de 80% del baseline) · Calidad en riesgo', fb:'Hola, tu velocidad está muy por debajo del baseline. Agendemos una sesión 1:1 para identificar bloqueos.', prod:120.4, base:190.0, epm:1.62},
+    {wh:'WH_SIM_04', ldap:'sim_usr_27', lider:'lider_sim_a', est:'EN DESARROLLO', diag:'Velocidad por debajo del 95% del baseline', fb:'Hola, tu velocidad está por debajo del baseline. Revisemos juntos tu ritmo y los pasos del proceso.', prod:168.9, base:185.0, epm:3.10},
+    {wh:'WH_SIM_04', ldap:'sim_usr_28', lider:'lider_sim_b', est:'CUMPLE TARGET', diag:'Cumple el baseline', fb:'Buen trabajo, mantén el ritmo.', prod:196.0, base:195.4, epm:0.75}
+  ];
+  var DC = [
+    {ldap:'sim_usr_31', lider:'lider_sim_a', dia:'20 oct 2026', base:184, neta:112.4, efec:310, uni:41, util:33},
+    {ldap:'sim_usr_32', lider:'lider_sim_b', dia:'19 oct 2026', base:372, neta:398.1, efec:640, uni:255, util:61},
+    {ldap:'sim_usr_33', lider:'lider_sim_c', dia:'15 oct 2026', base:226, neta:184.7, efec:520, uni:96, util:28},
+    {ldap:'sim_usr_34', lider:'lider_sim_a', dia:'06 oct 2026', base:349, neta:301.2, efec:705, uni:212, util:54},
+    {ldap:'sim_usr_35', lider:'lider_sim_b', dia:'26 oct 2026', base:238, neta:87.9, efec:390, uni:34, util:42},
+    {ldap:'sim_usr_36', lider:'lider_sim_c', dia:'21 oct 2026', base:417, neta:322.6, efec:880, uni:284, util:70},
+    {ldap:'sim_usr_37', lider:'lider_sim_a', dia:'16 oct 2026', base:null, neta:4.6, efec:22, uni:2, util:9},
+    {ldap:'sim_usr_38', lider:'lider_sim_b', dia:'14 oct 2026', base:295, neta:246.5, efec:450, uni:138, util:52}
+  ];
+  /* Histórico de retiros (ejemplo): una fila por caso */
+  var RET = {activos:46, excluidos:12, motivos:[['SIN DATOS SUFICIENTES',24],['REVERSA',14],['SIN RAZÓN APARENTE',6],['PRODUCTIVIDAD Y CALIDAD',2]]};
+  var RETT = [
+    {ldap:'sim_usr_41', fRev:'03 oct 2026', fAct:'01 oct 2026', motivo:'REVERSA', dias:2, epmA:0, epmD:0, prodA:0},
+    {ldap:'sim_usr_42', fRev:'—', fAct:'08 oct 2026', motivo:'SIN RAZÓN APARENTE', dias:7, epmA:1.20, epmD:1.70, prodA:245},
+    {ldap:'sim_usr_43', fRev:'04 oct 2026', fAct:'04 oct 2026', motivo:'REVERSA', dias:0, epmA:0, epmD:0, prodA:0},
+    {ldap:'sim_usr_44', fRev:'—', fAct:'09 oct 2026', motivo:'SIN DATOS SUFICIENTES', dias:2, epmA:3.10, epmD:2.40, prodA:198},
+    {ldap:'sim_usr_45', fRev:'06 oct 2026', fAct:'06 oct 2026', motivo:'REVERSA', dias:0, epmA:0, epmD:0, prodA:0},
+    {ldap:'sim_usr_46', fRev:'—', fAct:'11 oct 2026', motivo:'SIN DATOS SUFICIENTES', dias:0, epmA:null, epmD:null, prodA:null}
   ];
 
+  /* ============ Utilidades ============ */
+  var lang = 'es', cur = -1;
   var $ = function(s){ return document.querySelector(s); };
-  var ring=$('#gx-ring'), card=$('#gx-card'), block=$('#gx-block'), welcome=$('#gx-welcome');
-  var hsBtns=document.querySelectorAll('.hs');
-  var cur=-1, active=false;
+  var $$ = function(s){ return document.querySelectorAll(s); };
+  var loc = function(){ return lang === 'pt' ? 'pt-BR' : 'es-MX'; };
+  var T = function(){ return TXT[lang]; };
+  function isNum(v){ return typeof v === 'number' && isFinite(v); }
+  function num(v, d){ return isNum(v) ? v.toLocaleString(loc(), {minimumFractionDigits:d||0, maximumFractionDigits:d||0}) : '—'; }
+  function pct(v){ return isNum(v) ? (v*100).toLocaleString(loc(), {minimumFractionDigits:2, maximumFractionDigits:2})+' %' : '—'; }
+  function dec(v){ return isNum(v) ? v.toLocaleString(loc(), {minimumFractionDigits:2, maximumFractionDigits:2}) : '—'; }
+  function sum(a){ return a.reduce(function(x,y){ return x+y; }, 0); }
+  function mean(a){ return sum(a)/a.length; }
+  function div(a,b){ return b > 0 ? a/b : null; }
+  function setT(id, v){ var el = document.getElementById(id); if(el){ el.textContent = v; } }
+  function uniq(v, i, a){ return a.indexOf(v) === i; }
 
-  function place(){
-    if(!active) return;
-    var r=$(STEPS[cur].sel).getBoundingClientRect(), pad=6;
-    var t=r.top-pad, l=r.left-pad, w=r.width+pad*2, h=r.height+pad*2;
-    ring.style.display='block';
-    ring.style.top=t+'px'; ring.style.left=l+'px'; ring.style.width=w+'px'; ring.style.height=h+'px';
-    card.style.display='block';
-    var vw=window.innerWidth, vh=window.innerHeight, cw=card.offsetWidth, ch=card.offsetHeight, m=12;
-    var top=t+h+m;
-    if(top+ch>vh-m) top=t-ch-m;                    // arriba si no cabe debajo
-    if(top<m) top=Math.max(m, vh-ch-m);            // sección muy alta: tarjeta al pie de la pantalla
-    var left=Math.min(Math.max(m, l+w/2-cw/2), vw-cw-m);
-    card.style.top=top+'px'; card.style.left=left+'px';
+  /* ============ Adopción ============ */
+  function renderAdop(){
+    var t = T();
+    var madre = sum(WH.map(function(w){ return w.madre; }));
+    var expert = sum(WH.map(function(w){ return w.expert; }));
+    var falta = sum(WH.map(function(w){ return w.falta; }));
+    var mejorar = sum(WH.map(function(w){ return w.mejorar; }));
+    setT('v-hc', num(madre)); setT('v-rol', pct(div(expert, madre))); setT('v-cap', num(CAP)); setT('v-cap-pct', pct(div(CAP, madre)));
+    setT('t-panorama', t.panorama); setT('k-hc-t', t.hc_t); setT('k-hc-d', t.hc_d);
+    setT('k-rol-t', t.rol_t); setT('k-rol-d', t.rol_d); setT('k-cap-t', t.cap_t); setT('k-cap-d', t.cap_d);
+    setT('t-wh', t.wh_t); setT('t-wh-d', t.wh_d); setT('t-wh-f', t.wh_f); setT('v-wh-f', 'WH_SIM_01 · WH_SIM_02 · WH_SIM_03');
+    setT('wh-pager', t.wh_pager);
+    $('#wh-body').innerHTML = WH.map(function(w, i){
+      return '<tr><td>'+(i+1)+'. '+w.id+'</td><td>'+num(w.madre)+'</td><td>'+num(w.expert)+'</td><td>'+pct(div(w.expert,w.madre))+'</td>'+
+        '<td>'+num(w.falta)+'</td><td>'+pct(div(w.falta,w.madre))+'</td><td>'+num(w.mejorar)+'</td><td>'+pct(div(w.mejorar,w.madre))+'</td><td>'+dec(w.uso)+'</td></tr>';
+    }).join('');
+    setT('t-que', t.que_t); setT('t-que-1', t.que_1); setT('t-que-2', t.que_2); setT('t-que-3', t.que_3); setT('t-que-4', t.que_4);
+    setT('t-flt', t.flt_t); setT('t-flt-d', t.flt_d);
+    setT('l-ldap', t.l_ldap); setT('l-lider', t.l_lider); setT('l-estatus', t.l_estatus);
+    fillSel('#f-ldap', USERS.map(function(u){ return u.ldap; }));
+    fillSel('#f-lider', USERS.map(function(u){ return u.lider; }).filter(uniq));
+    fillSel('#f-estatus', USERS.map(function(u){ return u.estatus; }).filter(uniq));
+    setT('c1-t', t.c1_t); setT('c1-l', t.c1_l); setT('c1-p1', t.c1_p1);
+    setT('c1-n', num(expert)); setT('c1-c', t.c_n_c); setT('c1-pn', pct(div(expert, madre))); setT('c1-pc', t.c_p_c);
+    setT('c2-t', t.c2_t); setT('c2-l', t.c2_l); setT('c2-p1', t.c2_p1); setT('c2-p2', t.c2_p2);
+    setT('c2-n', num(falta)); setT('c2-c', t.c_n_c); setT('c2-pn', pct(div(falta, madre))); setT('c2-pc', t.c_p_c);
+    setT('c3-t', t.c3_t); setT('c3-l', t.c3_l); setT('c3-p1', t.c3_p1);
+    setT('c3-n', num(mejorar)); setT('c3-c', t.c_n_c); setT('c3-pn', pct(div(mejorar, madre))); setT('c3-pc', t.c_p_c);
+    setT('det-pager', t.det_pager);
+    renderDetalle();
   }
-  function show(i){
-    cur=Math.max(0,Math.min(STEPS.length-1,i)); active=true;
-    var s=STEPS[cur], el=$(s.sel);
-    block.style.display='block';
-    $('#gx-chap').textContent='Paso '+(cur+1);
-    $('#gx-count').textContent=(cur+1)+' / '+STEPS.length;
-    $('#gx-bar').style.width=((cur+1)/STEPS.length*100)+'%';
-    $('#gx-title').textContent=s.title;
-    $('#gx-text').innerHTML=s.text;
-    $('#gx-steps').innerHTML=s.steps.map(function(t){ return '<li>'+t+'</li>'; }).join('');
-    $('#gx-prev').disabled=(cur===0);
-    $('#gx-next').textContent=(cur===STEPS.length-1)?'Terminar ✓':'Siguiente →';
-    var r=el.getBoundingClientRect(), vh=window.innerHeight;
-    var y=window.scrollY+r.top-Math.max(70,(vh-Math.min(r.height,vh*.5))/3);
-    window.scrollTo({ top:Math.max(0,y), behavior:'smooth' });
-    hsBtns.forEach(function(b){ if(+b.dataset.step===cur) b.classList.add('done'); });
-    place(); setTimeout(place,350); setTimeout(place,750);
+  function fillSel(id, vals){
+    var s = $(id), prev = s.value || 'all';
+    s.innerHTML = '<option value="all">'+T().all+'</option>' + vals.map(function(v){ return '<option>'+v+'</option>'; }).join('');
+    s.value = vals.indexOf(prev) >= 0 ? prev : 'all';
   }
-  function end(){
-    active=false; cur=-1;
-    ring.style.display='none'; card.style.display='none'; block.style.display='none';
+  function renderDetalle(){
+    var f = {ldap:$('#f-ldap').value, lider:$('#f-lider').value, estatus:$('#f-estatus').value};
+    var rows = USERS.filter(function(u){
+      return (f.ldap==='all'||u.ldap===f.ldap) && (f.lider==='all'||u.lider===f.lider) && (f.estatus==='all'||u.estatus===f.estatus);
+    });
+    $('#det-body').innerHTML = rows.length ? rows.map(function(u, i){
+      return '<tr><td>'+(i+1)+'. '+u.ldap+'</td><td>'+u.lider+'</td><td>'+u.estatus+'</td><td class="wrap">'+u.cumple+'</td><td class="wrap">'+u.falta+'</td>'+
+        '<td>'+(u.rol?'<span class="tf-ok">TRUE</span>':'<span class="tf-no">FALSE</span>')+'</td><td>'+(u.curso?'<span class="tf-ok">TRUE</span>':'<span class="tf-no">FALSE</span>')+'</td></tr>';
+    }).join('') : '<tr><td colspan="7">—</td></tr>';
   }
 
-  hsBtns.forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); show(+b.dataset.step); }); });
-  $('#gx-next').addEventListener('click', function(){ if(cur>=STEPS.length-1) end(); else show(cur+1); });
-  $('#gx-prev').addEventListener('click', function(){ show(cur-1); });
-  $('#gx-skip').addEventListener('click', end);
-  block.addEventListener('click', end);
-  $('#gx-fab').addEventListener('click', function(){ welcome.classList.add('open'); });
-  $('#gx-w-go').addEventListener('click', function(){ welcome.classList.remove('open'); window.scrollTo(0,0); show(0); });
-  $('#gx-w-free').addEventListener('click', function(){ welcome.classList.remove('open'); });
-  welcome.addEventListener('click', function(e){ if(e.target===welcome) welcome.classList.remove('open'); });
+  /* ============ Performance ============ */
+  function renderPerf(){
+    var t = T();
+    setT('p-title', t.p_title); setT('p-flt-t', t.p_flt_t); setT('p-flt-d', t.p_flt_d);
+    setT('pl-wh', t.pl_wh); setT('pl-nom', t.pl_nom); setT('pl-lid', t.pl_lid); setT('pl-fec', t.pl_fec); setT('pl-fec-v', t.pl_fec_v);
+    setT('p-note-each', t.p_note_each);
+    var opoK = OPO.map(function(o){ return o*1e6; });
+    var realK = OPO.map(function(o, i){ return o*1e6*ADH[i]; });
+    var sO = sum(opoK), sR = sum(realK);
+    setT('e-k1', t.e_k1); setT('e-s1', t.e_s1); setT('e-v1', num(sO/1e6, 1)+' M');
+    setT('e-k2', t.e_k2); setT('e-s2', t.e_s2); setT('e-v2', num(sR/1e3, 1)+' mil');
+    setT('e-k3', t.e_k3); setT('e-s3', t.e_s3); setT('e-v3', pct(sR/sO));
+    setT('e-k4', t.e_k4); setT('e-s4', t.e_s4); setT('e-v4', '85%');
+    setT('ch1-t', t.ch1_t); setT('ch1-s', t.ch1_s);
+    $('#ch1-leg').innerHTML = legend([['#0E2150', t.leg_pz],['#A9D3F5', t.leg_op],['#1A73E8', t.leg_re],['#00B3A4', t.leg_ad]]);
+    chart($('#ch1'), WEEKS, [
+      {vals:PZ.map(function(v){ return v*1e6; }), color:'#0E2150'},
+      {vals:opoK, color:'#A9D3F5'},
+      {vals:realK, color:'#1A73E8'}
+    ], {line:{vals:ADH, color:'#00B3A4'}, lineMax:0.0015});
+    setT('ch2-t', t.ch2_t); setT('ch2-s', t.ch2_s);
+    $('#ch2-leg').innerHTML = legend([['#2E8BEF', t.leg_us],['#F59E3B', t.leg_ur],['#A56EE8', t.leg_pu]]);
+    chart($('#ch2'), WEEKS, [
+      {vals:USR_TOT, color:'#2E8BEF'},
+      {vals:USR_USO, color:'#F59E3B'}
+    ], {line:{vals:USR_USO.map(function(u,i){ return u/USR_TOT[i]; }), color:'#A56EE8'}, lineMax:0.25});
+    setT('p-note-prod', t.p_note_prod);
+    setT('p-k1', t.p_k1); setT('p-s1', t.p_s1); setT('p-v1', dec(mean(NETA)));
+    setT('p-k2', t.p_k2); setT('p-s2', t.p_s2); setT('p-v2', dec(mean(EPMS)));
+    setT('p-k3', t.p_k3); setT('p-s3', t.p_s3); setT('p-v3', dec(SKU_ERR)+' mil');
+    setT('p-k4', t.p_k4); setT('p-s4', t.p_s4); setT('p-v4', dec(UNI_ERR)+' mil');
+    setT('ch3-t', t.ch3_t); setT('ch3-s', t.ch3_s);
+    $('#ch3-leg').innerHTML = legend([['#2F5A8A', t.leg_ns],['#00B3A4', t.leg_epm]]);
+    chart($('#ch3'), WEEKS, [{vals:NETA, color:'#2F5A8A'}], {line:{vals:EPMS, color:'#00B3A4'}, barMax:250, lineMax:6});
+    setT('d-t', t.d_t); setT('d-d', t.d_d); setT('dc-pager', t.dc_pager);
+    $('#dc-body').innerHTML = DC.map(function(r, i){
+      return '<tr><td>'+(i+1)+'. '+r.ldap+'</td><td>'+r.lider+'</td><td>'+r.dia+'</td><td>'+num(r.base)+'</td><td>'+dec(r.neta)+'</td><td>'+num(r.efec)+'</td><td>'+num(r.uni)+'</td><td>'+num(r.util)+'</td></tr>';
+    }).join('');
+    setT('f-t', t.f_t); setT('f-d', t.f_d); setT('fb-pager', t.fb_pager);
+    $('#fb-body').innerHTML = FB.map(function(r){
+      return '<tr><td>'+r.wh+'</td><td>'+r.ldap+'</td><td>'+r.lider+'</td><td>'+r.est+'</td><td class="wrap">'+r.diag+'</td><td class="wrap">'+r.fb+'</td><td>'+dec(r.prod)+'</td><td>'+dec(r.base)+'</td><td>'+dec(r.epm)+'</td></tr>';
+    }).join('');
+    renderRet();
+  }
+  function legend(items){
+    return items.map(function(it){ return '<span><i style="background:'+it[0]+'"></i>'+it[1]+'</span>'; }).join('');
+  }
+  function chart(svg, labels, bars, opt){
+    var W = 900, H = 260, top = 14, bot = 226, n = labels.length, band = W / n, s = '';
+    var barMax = opt.barMax || Math.max.apply(null, bars[0].vals) * 1.15;
+    bars.forEach(function(b, k){
+      var grp = band * 0.7, w = grp / bars.length;
+      b.vals.forEach(function(v, i){
+        if(!isNum(v)) return;
+        var h = Math.max(0, (v / barMax) * (bot - top));
+        var x = i*band + (band - grp)/2 + k*w;
+        s += '<rect x="'+x+'" y="'+(bot-h)+'" width="'+(w*0.92)+'" height="'+h+'" fill="'+b.color+'"/>';
+      });
+    });
+    if(opt.line){
+      var L = opt.line, lmax = opt.lineMax || (Math.max.apply(null, L.vals) * 1.15);
+      var yL = function(v){ return bot - (v / lmax) * (bot - top); };
+      s += '<polyline points="'+L.vals.map(function(v, i){ return (i*band+band/2)+','+yL(v); }).join(' ')+'" fill="none" stroke="'+L.color+'" stroke-width="2.4"/>';
+      L.vals.forEach(function(v, i){ s += '<circle cx="'+(i*band+band/2)+'" cy="'+yL(v)+'" r="3.2" fill="'+L.color+'"/>'; });
+    }
+    labels.forEach(function(lb, i){ s += '<text x="'+(i*band+band/2)+'" y="'+(bot+18)+'" font-size="11" text-anchor="middle" fill="#5F6368">'+lb+'</text>'; });
+    s += '<line x1="0" y1="'+bot+'" x2="'+W+'" y2="'+bot+'" stroke="#DADCE0"/>';
+    svg.innerHTML = s;
+  }
 
-  document.addEventListener('keydown', function(e){
-    if(e.key==='Escape'){ if(welcome.classList.contains('open')) welcome.classList.remove('open'); else end(); }
-    if(!active) return;
-    if(e.key==='ArrowRight' && cur<STEPS.length-1) show(cur+1);
-    if(e.key==='ArrowLeft') show(cur-1);
+  /* ============ Retiros: historial de activación / retiro y motivo ============ */
+  function renderRet(){
+    var t = T();
+    var mx = Math.max.apply(null, RET.motivos.map(function(m){ return m[1]; }));
+    var bars = RET.motivos.map(function(m){
+      return '<div class="hbar"><span>'+m[0]+'</span><div class="t"><div class="f" style="width:'+(m[1]/mx*100)+'%"></div></div><span>'+m[1]+'</span></div>';
+    }).join('');
+    var rules = [
+      {t:B('Reversa','Reversa'), hoy:14, d:B('El rol se quitó y se volvió a poner casi de inmediato. No es un retiro real.','A função foi retirada e devolvida quase de imediato. Não é um desligamento real.')},
+      {t:B('Sin datos suficientes','Sem dados suficientes'), hoy:9, d:B('No procesó piezas: no hay base para juzgar su desempeño.','Não processou peças: não há base para avaliar o desempenho.')},
+      {t:B('Productividad y calidad','Produtividade e qualidade'), hoy:0, d:B('Falló en las dos: productividad bajo el 80% del baseline y EPM 25% peor.','Falhou nas duas: produtividade abaixo de 80% do baseline e EPM 25% pior.')},
+      {t:B('Productividad','Produtividade'), hoy:1, d:B('Produce poco, con calidad aceptable.','Produz pouco, com qualidade aceitável.')},
+      {t:B('Calidad','Qualidade'), hoy:1, d:B('Produce bien, pero con muchos errores.','Produz bem, mas com muitos erros.')},
+      {t:B('Sin razón aparente','Sem razão aparente'), hoy:16, d:B('Tenía datos suficientes y no cayó en productividad ni calidad.','Tinha dados suficientes e não caiu em produtividade nem qualidade.')}
+    ];
+    var rows = RETT.map(function(r, i){
+      return '<tr><td>'+(i+1)+'. '+r.ldap+'</td><td>'+r.fRev+'</td><td>'+r.fAct+'</td><td>'+r.motivo+'</td><td>'+num(r.dias)+'</td><td>'+dec(r.epmA)+'</td><td>'+dec(r.epmD)+'</td><td>'+num(r.prodA)+'</td></tr>';
+    }).join('');
+    $('#ret-root').innerHTML =
+      '<div class="ret-title">'+B('Historial de retiros del Rol Expert','Histórico de desligamentos do Rol Expert')+'</div>'+
+      '<div class="ret-row">'+
+        '<div class="ret-card" id="ret-panel">'+
+          '<h4>'+B('En análisis','Em análise')+'</h4>'+
+          '<p class="hint">'+B('Cuándo se le dio el permiso, cuándo se lo quitaron y por qué. Sirve para revisar las causas de retiro del Rol Expert.','Quando a permissão foi dada, quando foi retirada e por quê. Serve para revisar as causas do desligamento do Rol Expert.')+'</p>'+
+          '<div class="hint" style="font-weight:700;color:#B07A00;margin-top:10px">'+B('TOTAL DE CASOS ACTIVOS','TOTAL DE CASOS ATIVOS')+'</div>'+
+          '<div class="big-n">'+num(RET.activos)+'</div>'+
+          '<div class="hint" style="font-weight:700;color:#0B7A4B;margin-top:10px">'+B('CRITERIO DE EXCLUSIÓN','CRITÉRIO DE EXCLUSÃO')+'</div>'+
+          '<span class="chip ok">'+B('Casos en reversa excluidos','Casos em reversa excluídos')+'</span>'+
+          '<div class="hint" style="font-weight:700;color:#B07A00;margin-top:10px">'+B('MÉTRICAS AFECTADAS','MÉTRICAS AFETADAS')+'</div>'+
+          '<span class="chip warn">'+B('Calidad','Qualidade')+'</span><span class="chip warn">'+B('Productividad','Produtividade')+'</span>'+
+        '</div>'+
+        '<div class="ret-card" id="ret-motivos">'+
+          '<h4 style="text-transform:none;color:#0E2150">'+B('Motivos de retiro del Rol Expert (hoy)','Motivos de retiro do Rol Expert (hoje)')+'</h4>'+
+          '<p class="hint">'+B('Cuántos casos caen en cada motivo. La regla de cada motivo está en la fila de abajo.','Quantos casos caem em cada motivo. A regra de cada motivo está na linha de baixo.')+'</p>'+
+          bars+
+        '</div>'+
+      '</div>'+
+      '<div class="ret-row" style="margin-top:14px">'+
+        '<div class="ret-card"><h4>'+B('Casos activos','Casos ativos')+'</h4><div class="big-n" style="font-size:34px">'+num(RET.activos)+'</div></div>'+
+        '<div class="ret-card"><h4>'+B('Excluidos (reversa)','Excluídos (reversa)')+'</h4><div class="big-n" style="font-size:34px">'+num(RET.excluidos)+'</div></div>'+
+      '</div>'+
+      '<div id="ret-table" class="tbl-wrap" style="margin-top:14px">'+
+        '<table class="tbl"><thead><tr><th>LDAP</th><th>FECHA_REVERSA</th><th>FECHA_ROL_ACTIVO</th><th>MOTIVO</th><th>DIAS_ANTES</th><th>EPM_ANTES</th><th>EPM_DESPUES</th><th>PROD_ANTES</th></tr></thead>'+
+        '<tbody>'+rows+'</tbody></table>'+
+      '</div>'+
+      '<div id="ret-entend" style="margin-top:14px">'+
+        '<div style="font-size:16px;font-weight:700;color:#0E2150;margin-bottom:6px">'+B('Entendiendo los motivos (reglas de negocio)','Entendendo os motivos (regras de negócio)')+'</div>'+
+        '<div class="rules">'+rules.map(function(r){
+          return '<div class="rule"><span class="hoy">'+B('Hoy','Hoje')+': '+r.hoy+'</span><b>'+r.t+'</b>'+r.d+'</div>';
+        }).join('')+'</div>'+
+      '</div>';
+  }
+  function B(es, pt){ return lang === 'pt' ? pt : es; }
+
+  /* ============ Pestañas ============ */
+  function showPage(id){
+    $$('.tab').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-page') === id); });
+    $('#pg-adopcion').hidden = id !== 'adopcion';
+    $('#pg-performance').hidden = id !== 'performance';
+  }
+  $$('.tab').forEach(function(b){ b.addEventListener('click', function(){ showPage(b.getAttribute('data-page')); }); });
+  ['#f-ldap','#f-lider','#f-estatus'].forEach(function(id){ $(id).addEventListener('change', renderDetalle); });
+
+  /* ============ Idioma ============ */
+  function applyLang(){
+    var t = T();
+    document.documentElement.lang = loc();
+    setT('g-title', t.g_title); setT('g-sub', t.g_sub);
+    setT('demo-banner', t.demo);
+    setT('report-name', t.name); setT('b-restore', t.restore); setT('b-share', t.share); setT('b-edit', t.edit);
+    setT('tab-adop', t.tab_adop); setT('tab-perf', t.tab_perf);
+    setT('foot', t.foot); setT('fab', t.fab);
+    setT('t-exit', t.t_exit); setT('t-how-lbl', t.t_how);
+    setT('w-eye', t.w_eye); setT('w-title', t.w_title); setT('w-sub', t.w_sub);
+    setT('w-free', t.w_free); setT('w-go', t.w_go);
+    $('#w-list').innerHTML = t.w_list.map(function(x){ return '<li>'+x+'</li>'; }).join('');
+    STEPS = TOUR[lang];
+    renderAdop(); renderPerf();
+    if(cur >= 0) showStep(cur);
+  }
+  $$('.gbtn').forEach(function(b){
+    b.addEventListener('click', function(){
+      lang = b.getAttribute('data-lang');
+      $('#gate').classList.add('hide');
+      applyLang();
+      $('#wm').classList.add('open');
+    });
   });
-  window.addEventListener('resize', place);
-  window.addEventListener('scroll', place, { passive:true });
 
-  welcome.classList.add('open');   // bienvenida al abrir
+  /* ============ Recorrido ============ */
+  var ring = $('#ring'), tour = $('#tour');
+  function stopTour(){ cur = -1; ring.style.display='none'; tour.style.display='none'; $$('.hs').forEach(function(h){ h.classList.remove('done'); }); }
+  function showStep(i){
+    cur = Math.max(0, Math.min(STEPS.length-1, i));
+    var s = STEPS[cur], el = $(s.sel);
+    var pg = el.closest('.pg');
+    if(pg && pg.hidden){ showPage(pg.id === 'pg-performance' ? 'performance' : 'adopcion'); }
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    $$('.hs').forEach(function(h){ h.classList.toggle('done', +h.getAttribute('data-step') <= cur); });
+    setTimeout(function(){
+      var r = el.getBoundingClientRect(), pad = 6;
+      ring.style.display='block';
+      ring.style.top=(r.top-pad)+'px'; ring.style.left=(r.left-pad)+'px';
+      ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
+      tour.style.display='block';
+      tour.style.top=Math.max(12, Math.min(window.innerHeight-tour.offsetHeight-12, r.bottom+12))+'px';
+      tour.style.left=Math.max(12, Math.min(window.innerWidth-412, r.left))+'px';
+      $('#t-cnt').textContent = (cur+1)+' / '+STEPS.length;
+      $('#t-title').textContent = s.title;
+      $('#t-text').innerHTML = s.text;
+      $('#t-how').innerHTML = s.how.map(function(x){ return '<li>'+x+'</li>'; }).join('');
+      $('#t-prev').textContent = T().t_prev;
+      $('#t-prev').disabled = cur === 0;
+      $('#t-next').textContent = cur === STEPS.length-1 ? T().t_finish : T().t_next;
+    }, 350);
+  }
+  $$('.hs').forEach(function(h){ h.addEventListener('click', function(e){ e.stopPropagation(); showStep(+h.getAttribute('data-step')); }); });
+  $('#fab').addEventListener('click', function(){ showStep(0); });
+  $('#t-next').addEventListener('click', function(){ if(cur >= STEPS.length-1) stopTour(); else showStep(cur+1); });
+  $('#t-prev').addEventListener('click', function(){ showStep(cur-1); });
+  $('#t-exit').addEventListener('click', stopTour);
+  $('#w-go').addEventListener('click', function(){ $('#wm').classList.remove('open'); window.scrollTo(0,0); showStep(0); });
+  $('#w-free').addEventListener('click', function(){ $('#wm').classList.remove('open'); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){ $('#wm').classList.remove('open'); stopTour(); }
+    if(cur < 0) return;
+    if(e.key === 'ArrowRight' && cur < STEPS.length-1) showStep(cur+1);
+    if(e.key === 'ArrowLeft') showStep(cur-1);
+  });
+  window.addEventListener('resize', function(){ if(cur >= 0) showStep(cur); });
 })();
 </script>
 </body>
