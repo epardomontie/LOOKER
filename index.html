@@ -143,10 +143,12 @@
   /* ===== Recorrido guiado ===== */
   .fab{ position:fixed; right:18px; bottom:18px; z-index:8000; font-weight:700; font-size:13px; background:#0F2350; color:#FFE600; border:none; border-radius:30px; padding:12px 16px; cursor:pointer; box-shadow:0 8px 22px rgba(6,16,32,.35); }
   .ring{ position:fixed; z-index:9000; pointer-events:none; border-radius:12px; display:none; box-shadow:0 0 0 9999px rgba(9,20,38,.66), 0 0 0 3px #FFE600; transition:all .25s ease; }
-  .tour{ position:fixed; z-index:9001; width:400px; max-width:calc(100vw - 24px); background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 18px 48px rgba(6,16,32,.38); display:none; font-size:13.5px; line-height:1.5; max-height:70vh; overflow:auto; }
+  .tour{ position:fixed; z-index:9001; left:50%; bottom:16px; transform:translateX(-50%); width:min(440px, calc(100vw - 24px)); background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 18px 48px rgba(6,16,32,.38); display:none; font-size:13.5px; line-height:1.5; max-height:42vh; overflow:auto; }
   .tour .cnt{ font-size:11px; font-weight:700; color:#5F6368; }
   .tour h3{ margin:6px 0 6px; font-size:17px; color:#0E2150; }
   .tour .src{ background:#EEF4FC; border-radius:8px; padding:7px 10px; margin-top:8px; font-size:12.5px; color:#0E2150; }
+  .thead{ display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+  .tnav{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
   .tour .how{ background:#FFFBE6; border:1px solid #F5DE7A; border-radius:10px; padding:9px 11px; margin-top:10px; font-size:12.5px; }
   .tour .how ul{ margin:4px 0 0; padding-left:18px; }
   .tour .how li{ margin-bottom:3px; }
@@ -446,16 +448,17 @@
 
 <div class="ring" id="ring"></div>
 <div class="tour" id="tour">
-  <div class="cnt" id="t-cnt"></div>
+  <div class="thead">
+    <div class="cnt" id="t-cnt"></div>
+    <div class="tnav">
+      <button class="btn ghost" id="t-exit" type="button"></button>
+      <button class="btn" id="t-prev" type="button"></button>
+      <button class="btn pri" id="t-next" type="button"></button>
+    </div>
+  </div>
   <h3 id="t-title"></h3>
   <div id="t-text"></div>
   <div class="how"><b id="t-how-lbl"></b><ul id="t-how"></ul></div>
-  <div class="acts">
-    <button class="btn ghost" id="t-exit" type="button"></button>
-    <span style="flex:1"></span>
-    <button class="btn" id="t-prev" type="button"></button>
-    <button class="btn pri" id="t-next" type="button"></button>
-  </div>
 </div>
 
 <script>
@@ -909,7 +912,7 @@
     var s = STEPS[cur], el = $(s.sel);
     var pg = el.closest('.pg');
     if(pg && pg.hidden){ showPage(pg.id === 'pg-performance' ? 'performance' : 'adopcion'); }
-    el.scrollIntoView({behavior:'smooth', block:'center'});
+    window.scrollTo({top: Math.max(0, window.scrollY + el.getBoundingClientRect().top - 110), behavior:'smooth'});
     $$('.hs').forEach(function(h){ h.classList.toggle('done', +h.getAttribute('data-step') <= cur); });
     setTimeout(function(){
       var r = el.getBoundingClientRect(), pad = 6;
@@ -917,8 +920,6 @@
       ring.style.top=(r.top-pad)+'px'; ring.style.left=(r.left-pad)+'px';
       ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
       tour.style.display='block';
-      tour.style.top=Math.max(12, Math.min(window.innerHeight-tour.offsetHeight-12, r.bottom+12))+'px';
-      tour.style.left=Math.max(12, Math.min(window.innerWidth-412, r.left))+'px';
       $('#t-cnt').textContent = (cur+1)+' / '+STEPS.length;
       $('#t-title').textContent = s.title;
       $('#t-text').innerHTML = s.text;
